@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="db_GradingManagementDataSet" targetNamespace="http://tempuri.org/db_GradingManagementDataSet.xsd" xmlns:mstns="http://tempuri.org/db_GradingManagementDataSet.xsd" xmlns="http://tempuri.org/db_GradingManagementDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="db_GradingManagementConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="db_GradingManagementConnectionString (Settings)" PropertyReference="ApplicationSettings.CapstoneProject.Properties.Settings.GlobalReference.Default.db_GradingManagementConnectionString" Provider="System.Data.OleDb" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="tbl_CourseTableAdapter" GeneratorDataComponentClassName="tbl_CourseTableAdapter" Name="tbl_Course" UserDataComponentName="tbl_CourseTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="db_GradingManagementConnectionString (Settings)" DbObjectName="tbl_Course" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT prelim, midterm, final, average, convert_average, stud_id FROM tbl_Course</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="prelim" DataSetColumn="prelim" />
+              <Mapping SourceColumn="midterm" DataSetColumn="midterm" />
+              <Mapping SourceColumn="final" DataSetColumn="final" />
+              <Mapping SourceColumn="average" DataSetColumn="average" />
+              <Mapping SourceColumn="convert_average" DataSetColumn="convert_average" />
+              <Mapping SourceColumn="stud_id" DataSetColumn="stud_id" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="tbl_StudentDetailTableAdapter" GeneratorDataComponentClassName="tbl_StudentDetailTableAdapter" Name="tbl_StudentDetail" UserDataComponentName="tbl_StudentDetailTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="db_GradingManagementConnectionString (Settings)" DbObjectName="tbl_StudentDetail" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT stud_fname, stud_mname, stud_lname FROM tbl_StudentDetail</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="stud_fname" DataSetColumn="stud_fname" />
+              <Mapping SourceColumn="stud_mname" DataSetColumn="stud_mname" />
+              <Mapping SourceColumn="stud_lname" DataSetColumn="stud_lname" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="db_GradingManagementDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="True" msprop:Generator_UserDSName="db_GradingManagementDataSet" msprop:Generator_DataSetName="db_GradingManagementDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="tbl_Course" msprop:Generator_RowEvHandlerName="tbl_CourseRowChangeEventHandler" msprop:Generator_RowDeletedName="tbl_CourseRowDeleted" msprop:Generator_RowDeletingName="tbl_CourseRowDeleting" msprop:Generator_RowEvArgName="tbl_CourseRowChangeEvent" msprop:Generator_TablePropName="tbl_Course" msprop:Generator_RowChangedName="tbl_CourseRowChanged" msprop:Generator_RowChangingName="tbl_CourseRowChanging" msprop:Generator_TableClassName="tbl_CourseDataTable" msprop:Generator_RowClassName="tbl_CourseRow" msprop:Generator_TableVarName="tabletbl_Course" msprop:Generator_UserTableName="tbl_Course">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="prelim" msprop:Generator_ColumnPropNameInRow="prelim" msprop:Generator_ColumnPropNameInTable="prelimColumn" msprop:Generator_ColumnVarNameInTable="columnprelim" msprop:Generator_UserColumnName="prelim" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="midterm" msprop:Generator_ColumnPropNameInRow="midterm" msprop:Generator_ColumnPropNameInTable="midtermColumn" msprop:Generator_ColumnVarNameInTable="columnmidterm" msprop:Generator_UserColumnName="midterm" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="final" msprop:Generator_ColumnPropNameInRow="final" msprop:Generator_ColumnPropNameInTable="finalColumn" msprop:Generator_ColumnVarNameInTable="columnfinal" msprop:Generator_UserColumnName="final" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="average" msprop:Generator_ColumnPropNameInRow="average" msprop:Generator_ColumnPropNameInTable="averageColumn" msprop:Generator_ColumnVarNameInTable="columnaverage" msprop:Generator_UserColumnName="average" type="xs:int" minOccurs="0" />
+              <xs:element name="convert_average" msprop:Generator_ColumnPropNameInRow="convert_average" msprop:Generator_ColumnPropNameInTable="convert_averageColumn" msprop:Generator_ColumnVarNameInTable="columnconvert_average" msprop:Generator_UserColumnName="convert_average" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="stud_id" msprop:Generator_ColumnPropNameInRow="stud_id" msprop:Generator_ColumnPropNameInTable="stud_idColumn" msprop:Generator_ColumnVarNameInTable="columnstud_id" msprop:Generator_UserColumnName="stud_id" type="xs:int" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tbl_StudentDetail" msprop:Generator_RowEvHandlerName="tbl_StudentDetailRowChangeEventHandler" msprop:Generator_RowDeletedName="tbl_StudentDetailRowDeleted" msprop:Generator_RowDeletingName="tbl_StudentDetailRowDeleting" msprop:Generator_RowEvArgName="tbl_StudentDetailRowChangeEvent" msprop:Generator_TablePropName="tbl_StudentDetail" msprop:Generator_RowChangedName="tbl_StudentDetailRowChanged" msprop:Generator_RowChangingName="tbl_StudentDetailRowChanging" msprop:Generator_TableClassName="tbl_StudentDetailDataTable" msprop:Generator_RowClassName="tbl_StudentDetailRow" msprop:Generator_TableVarName="tabletbl_StudentDetail" msprop:Generator_UserTableName="tbl_StudentDetail">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="stud_fname" msprop:Generator_ColumnPropNameInRow="stud_fname" msprop:Generator_ColumnPropNameInTable="stud_fnameColumn" msprop:Generator_ColumnVarNameInTable="columnstud_fname" msprop:Generator_UserColumnName="stud_fname" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="stud_mname" msprop:Generator_ColumnPropNameInRow="stud_mname" msprop:Generator_ColumnPropNameInTable="stud_mnameColumn" msprop:Generator_ColumnVarNameInTable="columnstud_mname" msprop:Generator_UserColumnName="stud_mname" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="stud_lname" msprop:Generator_ColumnPropNameInRow="stud_lname" msprop:Generator_ColumnPropNameInTable="stud_lnameColumn" msprop:Generator_ColumnVarNameInTable="columnstud_lname" msprop:Generator_UserColumnName="stud_lname" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
