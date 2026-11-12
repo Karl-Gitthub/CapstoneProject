@@ -39,6 +39,27 @@ internal static class DemoSessionTests
     }
     public static void Units(Action<string, Action> check)
     {
+        check("ordinary entry detects demo data and holds the reset lock", () => Session(root =>
+        {
+            Environment.SetEnvironmentVariable("CAPSTONE_DEMO_ROOT", null);
+            Equal(true, DemoSession.Enabled);
+            using (DemoSession.Open())
+                Throws<IOException>(() => { using (File.Open(Path.Combine(root, ".demo-in-use.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None)) { } });
+        }));
+        check("automatic demo detection rejects an invalid marker", () => Session(root =>
+        {
+            Environment.SetEnvironmentVariable("CAPSTONE_DEMO_ROOT", null);
+            File.WriteAllText(Path.Combine(root, ".demo-session"), "invalid");
+            Throws<InvalidOperationException>(() => { using (DemoSession.Open()) { } });
+        }));
+        check("staged demo migration is separate from the active session", () => Session(root =>
+        {
+            Environment.SetEnvironmentVariable("CAPSTONE_DEMO_ROOT", null);
+            Environment.SetEnvironmentVariable("CAPSTONE_DATA_DIR", Path.Combine(root, ".new-fixture"));
+            Equal(false, DemoSession.Enabled);
+            using (File.Open(Path.Combine(root, ".demo-in-use.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (DemoSession.Open()) { }
+        }));
         check("demo session prevents reset for the entire window lifetime", () => Session(root =>
         {
             string path = Path.Combine(root, ".demo-in-use.lock");

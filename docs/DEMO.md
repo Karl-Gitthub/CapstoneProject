@@ -16,6 +16,10 @@ On the first launch, a visible administrator setup window opens. Choose your own
 
 The login and workspace display **DEMO · SAMPLE DATA**. Records persist between launches. Close the current demo before starting it again. There is no built-in username, password, or authentication bypass; use passwords different from those used for real accounts.
 
+The selected data directory determines demo mode. Opening a managed session's `data` directory through the main launcher or directly through the executable also shows the demo label and holds the reset guard. Fresh generation is staged before activation, so reset/setup can safely keep its exclusive lock.
+
+Launchers use Release builds by default and check the x64 provider, targeting pack, writable paths and database access. Use a shorter location if the path check fails. The CMD launchers apply execution-policy handling only to their PowerShell process. Build tools and ACE remain required; this is not an installer.
+
 To prepare data without opening windows:
 
 ```powershell
@@ -57,7 +61,7 @@ These are suggested usernames, not supplied accounts. The administrator's accoun
 6. **Show reporting.** As registrar, open **Evaluation** for the student, then **Reports**. Select the student, year, and semester, load saved records, and preview or export a copy of grades. Reports remain internal copies.
 7. **Show traceability.** As administrator, open **Audit history** and show the registration, enrollment, grade, and account actions created during the demonstration.
 
-Keep each step's role visible. In grade entry, choose the class and click **Open class** before editing. Print/export uses saved records; save changes first.
+Keep each step's role visible. In grade entry, **Loaded class** identifies the editing table. Choosing a different class disables editing, saving and printing until **Open class** is clicked. Declining the discard prompt restores the old selection and retains unsaved grades. Print/export uses saved records; save changes first.
 
 ## Reset for another rehearsal
 
@@ -89,4 +93,4 @@ All generated databases, accounts, archives, lock files, and builds remain under
 
 ## Verification
 
-On 12 November 2026, a clean source snapshot passed 149 application checks, nine local-setup checks, 12 demo/reset checks, and two real visible-window checks: **172 total**. Reset was tested with open-session locks, failed generation, repeated archives, and a nested checkout path. The demo login render was inspected. The two existing unused-field warnings in the legacy faculty form remain; actual Windows DPI, printer hardware, and Azure deployment were not part of this verification.
+On 12 November 2026, the launch-readiness update passed 159 application checks, eight prerequisite/path checks, nine local-setup checks, 12 demo/reset checks, and four real visible-window checks: **192 total**. Coverage includes first-run completion/cancellation, existing-account preservation, automatic demo detection through ordinary/direct entry, class-switch save/discard behavior, and reset protection. Grade-entry and demo-login renders were inspected. The two existing unused-field warnings in the legacy faculty form remain; actual Windows DPI, printer hardware, and Azure deployment were not part of this verification. See [release readiness](READINESS.md) for remaining work.

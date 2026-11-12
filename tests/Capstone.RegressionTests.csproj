@@ -10,6 +10,8 @@
     <Compile Include="WorkspaceTests.cs"/>
     <Compile Include="ApprovedBatchTests.cs"/>
     <Compile Include="DemoSessionTests.cs"/>
+    <Compile Include="OnboardingTests.cs"/>
+    <Compile Include="GradeContextTests.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

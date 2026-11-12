@@ -45,9 +45,30 @@ namespace CapstoneProject
             }
             if (Array.IndexOf(args, "--migrate-only") >= 0)
                 return;
-            if (Array.IndexOf(args, "--provision-admin") >= 0)
+            bool provisionOnly = Array.IndexOf(args, "--provision-admin") >= 0;
+            bool hasAdministrator;
+            try { hasAdministrator = Services.AccountAdministration.HasAdministrator(); }
+            catch (Exception ex)
             {
-                using (var dialog = new Presentation.FormDialog(Infrastructure.DemoSession.Enabled ? "Demo · Create administrator" : "Provision first administrator", Infrastructure.DemoSession.Enabled ? "Sample-data demo only. Choose your own administrator credentials; no default password is supplied." : "Local setup only. This works once, before an administrator exists. Keep the administrator password private.", v =>
+                MessageBox.Show("Account setup could not be checked. Close database users and check the selected working directory.\n\n" + ex.Message, "Student Records", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.ExitCode = 1;
+                return;
+            }
+            if (provisionOnly && hasAdministrator)
+            {
+                MessageBox.Show("An administrator already exists. Open the application and sign in; manage accounts through Staff accounts.", "Administrator setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (!hasAdministrator)
+            {
+                if (!ProvisionAdministrator()) return;
+                if (provisionOnly) return;
+            }
+            Application.Run(new LoginForm());
+        }
+        private static bool ProvisionAdministrator()
+        {
+            using (var dialog = new Presentation.FormDialog(Infrastructure.DemoSession.Enabled ? "Demo · Create administrator" : "Provision first administrator", Infrastructure.DemoSession.Enabled ? "Sample-data demo only. Choose your own administrator credentials; no default password is supplied." : "First-time setup. Choose your administrator credentials to activate this installation. Cancel to leave setup for later.", v =>
                 {
                     if (v["password"] != v["confirm"])
                         throw new ArgumentException("The passwords must match.");
@@ -55,11 +76,8 @@ namespace CapstoneProject
                 }, "Create administrator"))
                 {
                     dialog.Field("username", "Administrator username").Field("name", "Full name").Field("password", "Password (12–128 characters)", password: true).Field("confirm", "Confirm password", password: true);
-                    dialog.ShowDialog();
+                    return dialog.ShowDialog() == DialogResult.OK;
                 }
-                return;
-            }
-            Application.Run(new LoginForm());
         }
     }
 }

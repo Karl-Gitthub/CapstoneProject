@@ -72,9 +72,13 @@ namespace CapstoneProject.Presentation
             edit.Click += (s, e) => open(false);
             summary.Click += (s, e) => open(true);
         }
+        protected virtual bool ConfirmGradeDiscard()
+        {
+            return MessageBox.Show(this, "Discard unsaved grades and open this class?", "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+        }
         private async Task GradesPage(bool readOnly)
         {
-            var page = Page(readOnly ? "Read-only saved class grades. Make corrections through Grade entry." : "Edit period grades. Blank entries remain incomplete; averages are calculated from all three periods.", Auto(), Fill(), Auto());
+            var page = Page(readOnly ? "Read-only saved class grades. Make corrections through Grade entry." : "Edit period grades. Blank entries remain incomplete; averages are calculated from all three periods.", Auto(), Auto(), Fill(), Auto());
             var bar = Bar();
             var classes = new ComboBox { Name = "Class selector", AccessibleName = "Class", DropDownStyle = ComboBoxStyle.DropDownList, Width = 650, Margin = new Padding(0, 0, 12, 12) };
             var load = Theme.Button("Open class", true);
@@ -82,26 +86,47 @@ namespace CapstoneProject.Presentation
             bar.Controls.Add(Labeled("Class and term", classes));
             bar.Controls.Add(load);
             page.Controls.Add(bar, 0, 0);
+            var context = Theme.Label("No class loaded.", 10, true);
+            context.Name = "loadedGradeClass";
+            context.ForeColor = Theme.Navy;
+            context.MaximumSize = new Size(800, 0);
+            context.Margin = new Padding(0, 0, 0, 12);
+            page.Controls.Add(context, 0, 1);
             var grid = Theme.Grid("Class grades", !readOnly);
-            page.Controls.Add(grid, 0, 1);
+            page.Controls.Add(grid, 0, 2);
             var actions = Bar();
             var save = Theme.Button("Save grades", true);
             var print = Theme.Button("Print / export saved grades");
             if (!readOnly)
                 actions.Controls.Add(save);
             actions.Controls.Add(print);
-            page.Controls.Add(actions, 0, 2);
+            page.Controls.Add(actions, 0, 3);
             DataTable source = null, editing = null;
             bool binding = false;
+            Func<bool> loadedSelection = () => editing != null && selectedClass != null && classes.SelectedItem is ClassOption choice && choice.Key == selectedClass.Key;
+            Action updateContext = () =>
+            {
+                bool active = loadedSelection();
+                grid.Enabled = active;
+                save.Enabled = active && !readOnly && editing.Rows.Count > 0;
+                print.Enabled = active;
+                context.Text = editing == null ? "No class loaded." : "Loaded class: " + selectedClass + (active ? "" : "\nSelection changed. Click Open class to switch, or select the loaded class to keep editing.");
+            };
+            classes.SelectedIndexChanged += (s, e) => updateContext();
             Action show = () =>
             {
                 if (!(classes.SelectedItem is ClassOption option))
                 {
                     feedback.Text = "No class is available.";
+                    updateContext();
                     return;
                 }
-                if (dirty && MessageBox.Show(this, "Discard unsaved grades and open this class?", "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                if (dirty && !ConfirmGradeDiscard())
+                {
+                    classes.SelectedItem = classes.Items.Cast<ClassOption>().FirstOrDefault(item => item.Key == selectedClass.Key);
+                    updateContext();
                     return;
+                }
                 dirty = false;
                 selectedClass = option;
                 binding = true;
@@ -121,6 +146,7 @@ namespace CapstoneProject.Presentation
                         column.DefaultCellStyle.Format = "0.00";
                 }
                 binding = false;
+                updateContext();
                 feedback.Text = editing.Rows.Count == 0 ? "No students are enrolled in this class." : editing.Rows.Count + " enrolled students · " + option.Year + " · " + option.Semester;
             };
             Func<Task> reload = () => LoadData(() => new { Grades = service.Grades(), Offerings = service.Offerings() }, data => { source = data.Grades; var options = Options(source, data.Offerings); classes.Items.Clear(); classes.Items.AddRange(options.Cast<object>().ToArray()); var previous = selectedClass == null ? null : options.FirstOrDefault(c => c.Key == selectedClass.Key); if (options.Count > 0) classes.SelectedItem = previous ?? options[0]; show(); });
@@ -186,8 +212,9 @@ namespace CapstoneProject.Presentation
                 }
                 Dirty();
             };
-            save.Click += async (s, e) => { if (editing == null) { NeedSelection(); return; } if (!ValidateChildren()) return; grid.EndEdit(); BindingContext[editing].EndCurrentEdit(); var table = editing; await Save(() => service.SaveGrades(table), reload); };
-            print.Click += async (s, e) => { if (selectedClass == null) { NeedSelection(); return; } var option = selectedClass; await LoadData(() => service.Grades("", option.Year, option.Semester, option.Code), data => { var table = data.Clone(); foreach (DataRow row in data.Rows) if (Matches(row, option)) table.ImportRow(row); OpenReport("Computed class grades", Project(table, "stud_id", "stud_fname", "stud_lname", "prelim", "midterm", "final", "average", "convert_average"), option.ToString()); }); };
+            save.Click += async (s, e) => { if (!loadedSelection()) { feedback.Text = "Open the selected class before saving grades."; return; } if (!ValidateChildren()) return; if (!grid.EndEdit()) return; BindingContext[editing].EndCurrentEdit(); var table = editing; await Save(() => service.SaveGrades(table), reload); };
+            print.Click += async (s, e) => { if (!loadedSelection()) { feedback.Text = "Open the selected class before printing grades."; return; } var option = selectedClass; await LoadData(() => service.Grades("", option.Year, option.Semester, option.Code), data => { var table = data.Clone(); foreach (DataRow row in data.Rows) if (Matches(row, option)) table.ImportRow(row); OpenReport("Computed class grades", Project(table, "stud_id", "stud_fname", "stud_lname", "prelim", "midterm", "final", "average", "convert_average"), option.ToString()); }); };
+            updateContext();
             await reload();
         }
         private async Task EnrollmentPage()

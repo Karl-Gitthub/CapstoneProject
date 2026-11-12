@@ -11,6 +11,9 @@ if (!$SchemaOnly) {
     if (!(Test-Path -LiteralPath $ApplicationPath -PathType Leaf)) { throw 'Build the application first, or use -SchemaOnly.' }
 }
 
+. (Join-Path $PSScriptRoot 'Preflight.ps1')
+Assert-DatabasePrerequisites -DataDirectory $OutputDirectory
+
 # Fresh ACE databases, created from explicit schema; no old database is read or copied.
 # Short-text identifiers preserve the active services' contract without copying
 # legacy Memo fields, deleted pages, stored queries, attachments, or account records.

@@ -7,17 +7,15 @@ The source repository contains schema and sample-data generation code. Access da
 Run in 64-bit Windows PowerShell with the Visual Studio desktop build tools and ACE provider installed:
 
 ```powershell
-.\scripts\Provision-Admin.ps1
-.\scripts\Start-Local.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
 ```
 
-Setup creates five new Access databases in `CapstoneProject/bin/x64/Debug/Data`, with two clearly labelled sample students, two faculty profiles, and four sample courses. No account or password is supplied. Choose credentials in the first-administrator dialog.
+Alternatively, double-click **Start Main.cmd**. Setup creates five new Access databases in `CapstoneProject/bin/x64/Debug/Data`, with two clearly labelled sample students, two faculty profiles, and four sample courses. No account or password is supplied. Choose credentials in the first-administrator dialog; login opens after successful creation. Canceling setup exits without an account or login. Launchers build Release executables by default and preserve the same working-data directory.
 
 For a separate demonstration directory, use the same path in both commands:
 
 ```powershell
-.\scripts\Provision-Admin.ps1 -DataDirectory .\artifacts\demo-data
-.\scripts\Start-Local.ps1 -DataDirectory .\artifacts\demo-data
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1 -DataDirectory .\artifacts\demo-data
 ```
 
 The generated curriculum is illustrative. Replace sample records through the application before using approved school data.
@@ -38,4 +36,4 @@ Any exposed credentials that were actually used need invalidation by the account
 
 `scripts/Test.ps1` runs the application regression suite and separate local-setup checks. Setup checks use disposable data to verify fresh initialization, zero default accounts, sample counts, preservation of existing edits, empty-directory initialization, incomplete-set rejection, unrelated-file preservation, legacy-source protection, and failure before data creation when the executable is missing.
 
-On 12 November 2026, a clean source snapshot containing zero database binaries built successfully and passed all 143 application checks and nine setup checks (152 total). Only the two existing unused-field warnings in the legacy faculty form remained.
+On 12 November 2026, the current launch-readiness update passed 159 application checks, eight prerequisite/path checks, nine setup checks, 12 demo/reset checks and four visible-window checks (192 total), using isolated source and disposable data. Launch-window checks build and run Release executables. Only the two existing unused-field warnings in the legacy faculty form remained. See [release readiness](READINESS.md) for remaining constraints and deployment limitations.

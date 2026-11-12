@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param([ValidateSet('Debug','Release')][string]$Configuration='Debug',[string]$OutputDirectory)
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'Preflight.ps1')
+Assert-BuildPrerequisites
+if ($OutputDirectory) { Assert-LaunchFolder -Path $OutputDirectory }
 $repoRoot=Split-Path $PSScriptRoot -Parent
 $vswhere=Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 if (!(Test-Path -LiteralPath $vswhere)) { throw 'Install Visual Studio Build Tools with the .NET desktop workload and .NET Framework 4.7.2 targeting pack.' }

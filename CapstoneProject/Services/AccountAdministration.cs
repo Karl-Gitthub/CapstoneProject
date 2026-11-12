@@ -220,6 +220,10 @@ namespace CapstoneProject.Services
                 user.MustChangePassword = false;
             }
         }
+        public static bool HasAdministrator()
+        {
+            return Database.Query(SchemaMigrator.Accounts, "SELECT ID FROM tbl_UserLogin WHERE login_usertype='ADMINISTRATOR'").Rows.Count > 0;
+        }
         public static void Bootstrap(string username, string name, string password)
         {
             Username(username);

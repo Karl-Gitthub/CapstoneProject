@@ -8,20 +8,20 @@ For a separate sample-data demonstration, double-click **Start Demo.cmd** or run
 
 Requirements: Windows, Visual Studio 2022 or Build Tools with the .NET desktop workload and .NET Framework 4.7.2 targeting pack, Windows PowerShell 5.1, and a **64-bit Microsoft ACE OleDb provider**. Scripts build x64; the provider architecture must match.
 
-From the repository root in Windows PowerShell:
+Double-click **Start Main.cmd** to open the working application. From the repository root, the equivalent command is:
 
 ```powershell
-.\scripts\Start-Local.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
 ```
 
-This builds an executable under `artifacts/runs` and opens login. A fresh installation generates five Access databases with clearly labelled sample students, faculty and courses in `CapstoneProject/bin/x64/Debug/Data`. There are no default accounts or passwords. Existing complete working databases are preserved and receive backed-up workflow migrations. Incomplete database sets are rejected. Close database users when applying a schema upgrade.
+Launchers build Release executables under `artifacts/runs` by default; use `-Configuration Debug` for a developer build. Dependency, provider, write-access and path checks run before setup. A fresh installation generates five Access databases with clearly labelled sample students, faculty and courses, opens administrator setup, and continues to login after successful setup. Canceling setup exits without creating an account. There are no default credentials.
 
-For a new installation, provision the first administrator below, then sign in with the credentials chosen during setup. Existing installations keep their accounts. Role, program and faculty access come from the verified account. Staff can request access from login; an administrator verifies and approves the request before the chosen password becomes active.
+Working data remains in `CapstoneProject/bin/x64/Debug/Data` for compatibility, including when the executable is a Release build. Existing complete databases and accounts are preserved. Incomplete sets are rejected. Close database users when applying a schema upgrade. Role, program and faculty access come from the verified account. Staff can request access from login; an administrator verifies and approves the request before the chosen password becomes active.
 
-To create the **first** administrator, the person responsible for local setup runs:
+First-run setup is automatic. To open the guarded first-administrator setup separately:
 
 ```powershell
-.\scripts\Provision-Admin.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Provision-Admin.ps1
 ```
 
 Choose the administrator credentials in the setup window. No administrator password is embedded in source or supplied by default. This setup route refuses to create another administrator after one exists. Subsequent account changes require a signed-in administrator. Password assistance is a local review queue; it does not send reset emails. Administrators verify identity through the school's normal process, set a temporary password, and the user must change it before accessing records.
@@ -42,11 +42,13 @@ See [data setup and correctness notes](docs/DATA-SETUP.md) and [data handling](d
 .\scripts\Test.ps1
 ```
 
-Tests build to a separate verification directory. They exercise production services against disposable Access copies: role/program/class restrictions, registration review, related-record and enrollment rollback, schedule conflicts, faculty reassignment, account approvals, forced password changes, session invalidation, decimal and partial grades, and stale-write rejection. They also render the actual workspace pages and dialogs. `-UnitOnly` explicitly skips Access integration and UI rendering.
+Tests build to a separate verification directory. They exercise production services against disposable Access copies: role/program/class restrictions, registration review, related-record and enrollment rollback, schedule conflicts, faculty reassignment, account approvals, forced password changes, session invalidation, decimal and partial grades, and stale-write rejection. They also cover first-run completion/cancellation, safe class switching, prerequisite failures, automatic demo detection, visible launch windows, and workspace/dialog renders. `-UnitOnly` explicitly skips Access integration and UI rendering.
 
 The suite also generates WinForms renders under `docs/screenshots` at simulated 100%, 125%, 150%, and 200% scaling. These are not a substitute for testing actual Windows display settings and keyboard workflows. See [implementation and validation notes](docs/IMPLEMENTATION.md).
 
 ## Current scope
+
+See [release readiness](docs/READINESS.md) for the 192-check verification and remaining work before real school deployment.
 
 - One role-aware shell, shared sidebar, consistent fields/tables and visible selection and feedback states.
 - Student search, profile, grouped create/edit forms, credential status and coordinator-to-registrar review.

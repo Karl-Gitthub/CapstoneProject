@@ -57,7 +57,15 @@ function New-DemoData([string]$path,[string]$applicationPath) {
 }
 function Initialize-DemoData($layout,[string]$applicationPath) {
     Assert-DemoPath $layout.Data $layout.Root
-    if (!(Test-Path -LiteralPath $layout.Data)) { New-DemoData $layout.Data $applicationPath }
+    if (!(Test-Path -LiteralPath $layout.Data)) {
+        # Migrate a staged dataset outside the active 'data' path, then activate
+        # it under the caller's exclusive guard. Auto-detection also applies to migration.
+        $candidate=Join-Path $layout.Root ('.new-'+[Guid]::NewGuid().ToString('N').Substring(0,12))
+        Assert-DemoPath $candidate $layout.Root
+        New-DemoData $candidate $applicationPath
+        Assert-DemoPath $layout.Data $layout.Root
+        [IO.Directory]::Move($candidate,$layout.Data)
+    }
     Assert-DemoData $layout
 }
 function Reset-DemoData($layout,[string]$applicationPath) {

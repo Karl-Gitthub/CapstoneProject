@@ -162,7 +162,9 @@ internal static class WorkspaceTests
         check("late enrollment failure rolls back header and earlier course writes", () => { Throws<ArgumentException>(() => school.SaveEnrollment(rollbackStudent.Id, "2026-2027", "First semester", -1, new[] { first, second }, true)); Equal(0, school.Enrollment(rollbackStudent.Id, "2026-2027", "First semester").Rows.Count); Equal(0, school.Grades(rollbackStudent.Id).AsEnumerable().Count(r => Convert.ToString(r["course_code"]) == "IT201")); });
         check("student name edits appear in grade and report records",()=>{var identity=school.Student(student.Id);identity.LastName="Santos-Updated";school.SaveStudent(identity,false);Equal("Santos-Updated",Convert.ToString(school.Grades(student.Id).Rows[0]["stud_lname"]));});
         ApprovedBatchTests.Integration(check, school, program, otherProgram, instructor, student.Id);
+        GradeContextTests.Integration(check, instructor);
         DemoSessionTests.Interface(check, registrar, repo);
+        OnboardingTests.Integration(check, repo);
         Application.EnableVisualStyles();
         foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Grades"), Tuple.Create(registrar, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry"), Tuple.Create(admin, "Staff accounts"), Tuple.Create(admin, "Access requests"), Tuple.Create(admin, "Password assistance"), Tuple.Create(admin, "Audit history") })
         {
