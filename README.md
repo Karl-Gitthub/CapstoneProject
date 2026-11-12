@@ -4,6 +4,8 @@ A C# Windows Forms application for student records, enrollment and grading, main
 
 ## Run locally
 
+For a separate sample-data demonstration, double-click **Start Demo.cmd** or run `scripts/Start-Demo.ps1`. It opens administrator setup on the first run, then login, and keeps records under `artifacts/demo/presentation/data`. See the [demonstration walkthrough and reset instructions](docs/DEMO.md).
+
 Requirements: Windows, Visual Studio 2022 or Build Tools with the .NET desktop workload and .NET Framework 4.7.2 targeting pack, Windows PowerShell 5.1, and a **64-bit Microsoft ACE OleDb provider**. Scripts build x64; the provider architecture must match.
 
 From the repository root in Windows PowerShell:

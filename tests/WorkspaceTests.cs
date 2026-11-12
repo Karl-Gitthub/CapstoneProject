@@ -28,6 +28,7 @@ internal static class WorkspaceTests
     public static void Units(Action<string, Action> check)
     {
         ApprovedBatchTests.Units(check);
+        DemoSessionTests.Units(check);
         check("schedule overlap detects shared days", () => Equal(true, SchoolService.ScheduleOverlap("M,W", 540, 630, "W,F", 600, 690)));
         check("back-to-back classes do not overlap", () => Equal(false, SchoolService.ScheduleOverlap("M,W", 540, 630, "M", 630, 720)));
         check("different class days do not overlap", () => Equal(false, SchoolService.ScheduleOverlap("M", 540, 630, "Tu", 540, 630)));
@@ -161,6 +162,7 @@ internal static class WorkspaceTests
         check("late enrollment failure rolls back header and earlier course writes", () => { Throws<ArgumentException>(() => school.SaveEnrollment(rollbackStudent.Id, "2026-2027", "First semester", -1, new[] { first, second }, true)); Equal(0, school.Enrollment(rollbackStudent.Id, "2026-2027", "First semester").Rows.Count); Equal(0, school.Grades(rollbackStudent.Id).AsEnumerable().Count(r => Convert.ToString(r["course_code"]) == "IT201")); });
         check("student name edits appear in grade and report records",()=>{var identity=school.Student(student.Id);identity.LastName="Santos-Updated";school.SaveStudent(identity,false);Equal("Santos-Updated",Convert.ToString(school.Grades(student.Id).Rows[0]["stud_lname"]));});
         ApprovedBatchTests.Integration(check, school, program, otherProgram, instructor, student.Id);
+        DemoSessionTests.Interface(check, registrar, repo);
         Application.EnableVisualStyles();
         foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Grades"), Tuple.Create(registrar, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry"), Tuple.Create(admin, "Staff accounts"), Tuple.Create(admin, "Access requests"), Tuple.Create(admin, "Password assistance"), Tuple.Create(admin, "Audit history") })
         {

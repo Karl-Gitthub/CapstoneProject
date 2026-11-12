@@ -188,6 +188,7 @@
     <Compile Include="Services\StudentStore.cs" />
     <Compile Include="Services\AccessPolicy.cs" />
     <Compile Include="Infrastructure\SchemaMigrator.cs" />
+    <Compile Include="Infrastructure\DemoSession.cs" />
 <Compile Include="Services\GradeRepository.cs" />
 <Compile Include="Presentation\Theme.cs" />
 <Compile Include="StudentInformationSheet.Layout.cs" />

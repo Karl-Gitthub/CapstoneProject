@@ -16,7 +16,7 @@ namespace CapstoneProject
             SuspendLayout();
             AutoScaleDimensions = new SizeF(96,96); AutoScaleMode = AutoScaleMode.Dpi;
             Font = new Font("Segoe UI", 10); BackColor = Color.White;
-            Text = "Sign in · Student Records"; StartPosition = FormStartPosition.CenterScreen;
+            Text = CapstoneProject.Infrastructure.DemoSession.Enabled ? "Demo · Sign in · Student Records" : "Sign in · Student Records"; StartPosition = FormStartPosition.CenterScreen;
             ClientSize = new Size(960, 680); MinimumSize = new Size(860, 640);
             var shell = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
             shell.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 39)); shell.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 61));
@@ -26,6 +26,10 @@ namespace CapstoneProject
             var name = Theme.Label("SYSTEMS PLUS\nCOMPUTER COLLEGE", 15, true); name.ForeColor = Color.White; name.Margin = new Padding(0,48,0,40); brandStack.Controls.Add(name);
             var title = Theme.Label("Student records", 22, true); title.ForeColor = Color.White; brandStack.Controls.Add(title);
             var subtitle = Theme.Label("Registration, enrollment\nand academic records.", 11); subtitle.ForeColor = Color.FromArgb(210,220,230); brandStack.Controls.Add(subtitle);
+            if (CapstoneProject.Infrastructure.DemoSession.Enabled)
+            {
+                var demo = Theme.Label("DEMO · SAMPLE DATA", 10, true); demo.Name = "demoIndicator"; demo.ForeColor = Theme.Gold; demo.Margin = new Padding(0,24,0,0); brandStack.Controls.Add(demo);
+            }
             brand.Controls.Add(brandStack); brand.Controls.Add(new Panel { Dock=DockStyle.Top,Height=4,BackColor=Theme.Gold });
             var content = new Panel { Dock = DockStyle.Fill, Padding = new Padding(40,48,40,24), Margin = Padding.Empty, AutoScroll = true };
             var fields = Theme.Stack(); fields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));

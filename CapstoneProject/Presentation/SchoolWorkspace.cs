@@ -27,7 +27,7 @@ namespace CapstoneProject.Presentation
         {
             this.user = user;
             service = new SchoolService(user);
-            Text = "Student Records · " + DisplayRole;
+            Text = (DemoSession.Enabled ? "Demo · " : "") + "Student Records · " + DisplayRole;
             Font = new Font("Segoe UI", 10);
             BackColor = Theme.Surface;
             AutoScaleDimensions = new SizeF(96, 96);
@@ -86,6 +86,10 @@ namespace CapstoneProject.Presentation
             subtitle.MaximumSize = new Size(840, 0);
             headings.Controls.Add(title);
             headings.Controls.Add(subtitle);
+            if (DemoSession.Enabled)
+            {
+                var demo = Theme.Label("DEMO · SAMPLE DATA", 9, true); demo.Name = "demoIndicator"; demo.ForeColor = Theme.Navy; headings.Controls.Add(demo);
+            }
             var refresh = Theme.Button("Reload");
             refresh.Click += (s, e) => Navigate(route);
             header.Controls.Add(headings, 0, 0);

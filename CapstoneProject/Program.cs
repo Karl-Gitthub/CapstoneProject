@@ -13,6 +13,19 @@ namespace CapstoneProject
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            IDisposable demo;
+            try { demo = Infrastructure.DemoSession.Open(); }
+            catch (Exception ex)
+            {
+                if (Array.IndexOf(args, "--migrate-only") < 0)
+                    MessageBox.Show(ex.Message, "Demo setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.ExitCode = 1;
+                return;
+            }
+            using (demo) Run(args);
+        }
+        private static void Run(string[] args)
+        {
             AppDomain.CurrentDomain.SetData("DataDirectory", Infrastructure.Database.DirectoryPath);
             if (Array.IndexOf(args, "--preview-students") >= 0)
             {
@@ -34,7 +47,7 @@ namespace CapstoneProject
                 return;
             if (Array.IndexOf(args, "--provision-admin") >= 0)
             {
-                using (var dialog = new Presentation.FormDialog("Provision first administrator", "Local setup only. This works once, before an administrator exists. Keep the administrator password private.", v =>
+                using (var dialog = new Presentation.FormDialog(Infrastructure.DemoSession.Enabled ? "Demo · Create administrator" : "Provision first administrator", Infrastructure.DemoSession.Enabled ? "Sample-data demo only. Choose your own administrator credentials; no default password is supplied." : "Local setup only. This works once, before an administrator exists. Keep the administrator password private.", v =>
                 {
                     if (v["password"] != v["confirm"])
                         throw new ArgumentException("The passwords must match.");

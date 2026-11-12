@@ -19,4 +19,6 @@ else {
 if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }
 if (!$UnitOnly) {
     & (Join-Path $repoRoot 'tests\LocalSetup.Tests.ps1') -ApplicationPath (Join-Path $verificationDirectory 'CapstoneProject.exe') -TestRoot (Join-Path $verificationDirectory 'local-setup-tests') | Tee-Object -FilePath (Join-Path $verificationDirectory 'setup-test-results.txt')
+    & (Join-Path $repoRoot 'tests\DemoScripts.Tests.ps1') -ApplicationPath (Join-Path $verificationDirectory 'CapstoneProject.exe') | Tee-Object -FilePath (Join-Path $verificationDirectory 'demo-test-results.txt')
+    & (Join-Path $repoRoot 'tests\LaunchWindows.Tests.ps1') -TestRoot (Join-Path $verificationDirectory 'launch-tests') | Tee-Object -FilePath (Join-Path $verificationDirectory 'launch-test-results.txt')
 }
