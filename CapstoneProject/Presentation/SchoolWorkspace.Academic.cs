@@ -125,13 +125,39 @@ namespace CapstoneProject.Presentation
             };
             Func<Task> reload = () => LoadData(() => new { Grades = service.Grades(), Offerings = service.Offerings() }, data => { source = data.Grades; var options = Options(source, data.Offerings); classes.Items.Clear(); classes.Items.AddRange(options.Cast<object>().ToArray()); var previous = selectedClass == null ? null : options.FirstOrDefault(c => c.Key == selectedClass.Key); if (options.Count > 0) classes.SelectedItem = previous ?? options[0]; show(); });
             load.Click += (s, e) => show();
+            grid.CellFormatting += (s, e) =>
+            {
+                if (e.ColumnIndex < 0 || !new[] { "prelim", "midterm", "final" }.Contains(grid.Columns[e.ColumnIndex].Name)) return;
+                decimal grade;
+                if (GradeCalculator.TryParseStored(Convert.ToString(e.Value), out grade))
+                {
+                    e.Value = grade.ToString(System.Globalization.CultureInfo.CurrentCulture);
+                    e.FormattingApplied = true;
+                }
+            };
+            grid.CellParsing += (s, e) =>
+            {
+                if (e.ColumnIndex < 0 || !new[] { "prelim", "midterm", "final" }.Contains(grid.Columns[e.ColumnIndex].Name)) return;
+                string input = Convert.ToString(e.Value);
+                decimal grade;
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    e.Value = DBNull.Value;
+                    e.ParsingApplied = true;
+                }
+                else if (GradeCalculator.TryParseInput(input, out grade) && grade >= 0 && grade <= 100)
+                {
+                    e.Value = grade.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    e.ParsingApplied = true;
+                }
+            };
             grid.CellValidating += (s, e) =>
             {
                 if (binding || readOnly || e.RowIndex < 0 || !new[] { "prelim", "midterm", "final" }.Contains(grid.Columns[e.ColumnIndex].Name))
                     return;
                 string value = Convert.ToString(e.FormattedValue);
                 decimal grade;
-                if (!string.IsNullOrWhiteSpace(value) && (!decimal.TryParse(value, out grade) || grade < 0 || grade > 100))
+                if (!string.IsNullOrWhiteSpace(value) && (!GradeCalculator.TryParseInput(value, out grade) || grade < 0 || grade > 100))
                 {
                     e.Cancel = true;
                     grid.Rows[e.RowIndex].ErrorText = "Use a grade from 0 to 100, or leave it blank.";
@@ -147,11 +173,11 @@ namespace CapstoneProject.Presentation
                 if (row == null)
                     return;
                 decimal a, b, c;
-                if (decimal.TryParse(Value(row, "prelim"), out a) && decimal.TryParse(Value(row, "midterm"), out b) && decimal.TryParse(Value(row, "final"), out c) && a >= 0 && a <= 100 && b >= 0 && b <= 100 && c >= 0 && c <= 100)
+                if (GradeCalculator.TryParseStored(Value(row, "prelim"), out a) && GradeCalculator.TryParseStored(Value(row, "midterm"), out b) && GradeCalculator.TryParseStored(Value(row, "final"), out c) && a >= 0 && a <= 100 && b >= 0 && b <= 100 && c >= 0 && c <= 100)
                 {
                     decimal average = GradeCalculator.Average(a, b, c);
                     row["average"] = (double)average;
-                    row["convert_average"] = GradeCalculator.ConvertAverage(average).ToString("0.00");
+                    row["convert_average"] = GradeCalculator.ConvertAverage(average).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else
                 {

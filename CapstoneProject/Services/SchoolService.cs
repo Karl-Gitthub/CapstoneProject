@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.OleDb;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -205,7 +206,7 @@ namespace CapstoneProject.Services
             using (var db = Database.Open(SchemaMigrator.Academic))
             using (var transaction = db.BeginTransaction())
             {
-                Database.Execute(db, transaction, "UPDATE app_write_locks SET revision=revision+1 WHERE lock_key='assignments'");
+                LockAcademicWrites(db, transaction);
                 if (offeringId > 0)
                 {
                     var current = Database.Query(db, transaction, "SELECT * FROM app_offerings WHERE offering_id=?", offeringId);
@@ -248,6 +249,22 @@ namespace CapstoneProject.Services
         {
             return start < otherEnd && otherStart < end && days.Split(',').Intersect(otherDays.Split(',')).Any();
         }
+        private static void LockAcademicWrites(OleDbConnection db, OleDbTransaction transaction)
+        {
+            // Assignment edits and enrollment confirmation affect the same rows.
+            // Always take both existing lock keys in this order, before reading offerings.
+            try
+            {
+                foreach (var key in new[] { "assignments", "enrollments" })
+                using (var command = Database.Command(db, transaction, "UPDATE app_write_locks SET revision=revision+1 WHERE lock_key=?", key))
+                if (command.ExecuteNonQuery() != 1)
+                    throw new DBConcurrencyException("Academic setup changed. Close database users and run local setup before retrying.");
+            }
+            catch (OleDbException ex) when (ex.Errors.Cast<OleDbError>().Any(error => error.SQLState == "3218"))
+            {
+                throw new DBConcurrencyException("Another staff member is updating academic records. Reload the class or enrollment and try again. None of this operation was saved.", ex);
+            }
+        }
         public DataTable Enrollment(string student, string year, string semester)
         {
             Student(student);
@@ -272,16 +289,6 @@ namespace CapstoneProject.Services
             var ids = offeringIds.ToArray();
             if (ids.Length == 0 || ids.Length != ids.Distinct().Count())
                 throw new ArgumentException("Select at least one class, without duplicate selections.");
-            var available = Offerings(student.Program, year, semester);
-            var selected = ids.Select(id => available.AsEnumerable().SingleOrDefault(r => Convert.ToInt32(r["offering_id"]) == id)).ToArray();
-            if (selected.Any(r => r == null))
-                throw new ArgumentException("A class is outside this student's program or term. Reload the offerings.");
-            if (selected.Select(r => Convert.ToString(r["course_code"])).Distinct().Count() != selected.Length)
-                throw new ArgumentException("Select only one section of each course.");
-            for (int i = 0; i < selected.Length; i++)
-            for (int j = i + 1; j < selected.Length; j++)
-            if (ScheduleOverlap(Convert.ToString(selected[i]["day_codes"]), Convert.ToInt32(selected[i]["start_minute"]), Convert.ToInt32(selected[i]["end_minute"]), Convert.ToString(selected[j]["day_codes"]), Convert.ToInt32(selected[j]["start_minute"]), Convert.ToInt32(selected[j]["end_minute"])))
-                throw new ArgumentException("The selected classes have a schedule conflict.");
             using (var registration = Database.Open(SchemaMigrator.Students))
             using (var registrationLock = registration.BeginTransaction())
             using (var db = Database.Open(SchemaMigrator.Academic))
@@ -294,7 +301,17 @@ namespace CapstoneProject.Services
                     throw new DBConcurrencyException("The student record changed. Reload before saving enrollment.");
                 if (confirm && (currentStudent.Rows.Count != 1 || Convert.ToString(currentStudent.Rows[0]["review_state"]) != "Approved"))
                     throw new ArgumentException("Approve the student registration before confirming enrollment.");
-                Database.Execute(db, transaction, "UPDATE app_write_locks SET revision=revision+1 WHERE lock_key='enrollments'");
+                LockAcademicWrites(db, transaction);
+                var available = Database.Query(db, transaction, "SELECT * FROM app_offerings WHERE program_code=? AND school_year=? AND semester_name=?", student.Program, year, semester);
+                var selected = ids.Select(offeringId => available.AsEnumerable().SingleOrDefault(r => Convert.ToInt32(r["offering_id"]) == offeringId)).ToArray();
+                if (selected.Any(r => r == null))
+                    throw new ArgumentException("A class is outside this student's program or term. Reload the offerings.");
+                if (selected.Select(r => Convert.ToString(r["course_code"])).Distinct().Count() != selected.Length)
+                    throw new ArgumentException("Select only one section of each course.");
+                for (int i = 0; i < selected.Length; i++)
+                for (int j = i + 1; j < selected.Length; j++)
+                if (ScheduleOverlap(Convert.ToString(selected[i]["day_codes"]), Convert.ToInt32(selected[i]["start_minute"]), Convert.ToInt32(selected[i]["end_minute"]), Convert.ToString(selected[j]["day_codes"]), Convert.ToInt32(selected[j]["start_minute"]), Convert.ToInt32(selected[j]["end_minute"])))
+                    throw new ArgumentException("The selected classes have a schedule conflict.");
                 var header = Database.Query(db, transaction, "SELECT * FROM app_enrollments WHERE student_id=? AND school_year=? AND semester_name=?", studentId, year, semester);
                 int id;
                 if (header.Rows.Count == 0)
@@ -347,12 +364,7 @@ namespace CapstoneProject.Services
                 sql += " AND c.fac_id=?";
                 values.Add(user.FacultyId);
             }
-            else if (AccessPolicy.Coordinator(user))
-            {
-                sql += " AND s.stud_program=?";
-                values.Add(AccessPolicy.Program(user));
-            }
-            else
+            else if (!AccessPolicy.Coordinator(user))
                 AccessPolicy.Require(AccessPolicy.Registrar(user));
             foreach (var filter in new[] { new[] { "c.stud_id", student }, new[] { "c.school_year", year }, new[] { "c.sem", semester }, new[] { "c.course_code", course } })
             if (filter[1] != "")
@@ -388,7 +400,9 @@ namespace CapstoneProject.Services
                 if (!identities.TryGetValue(Convert.ToString(row["stud_id"]), out identity)) continue;
                 row["stud_fname"] = identity["studfname"]; row["stud_mname"] = identity["studmname"]; row["stud_lname"] = identity["studlname"]; row["stud_program"] = identity["studprogram"];
             }
-            if (AccessPolicy.Coordinator(user)) result = Filter(result, r => Convert.ToString(r["stud_program"]) == AccessPolicy.Program(user));
+            // Scope only after reconciliation. A stale academic snapshot must neither
+            // hide transferred students nor authorize records missing a primary identity.
+            if (AccessPolicy.Coordinator(user)) result = Filter(result, r => identities.ContainsKey(Convert.ToString(r["stud_id"])) && Convert.ToString(r["stud_program"]) == AccessPolicy.Program(user));
             result.AcceptChanges();
             return result;
         }
@@ -411,7 +425,7 @@ namespace CapstoneProject.Services
                     if (string.IsNullOrWhiteSpace(Convert.ToString(row[field])))
                         continue;
                     decimal value;
-                    if (!decimal.TryParse(Convert.ToString(row[field]), NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+                    if (!GradeCalculator.TryParseStored(Convert.ToString(row[field]), out value))
                         throw new ArgumentException("Enter numeric grades from 0 to 100, or leave an unrecorded grade blank.");
                     GradeCalculator.Validate(value);
                 }

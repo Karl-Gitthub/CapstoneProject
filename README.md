@@ -34,6 +34,8 @@ For a read-only preview using synthetic records without login or database setup:
 
 ## Verify
 
+For a separate demonstration with freshly generated databases and no default accounts, see [approved fixes and synthetic data setup](docs/APPROVED-FIXES.md). This preparation does not remove existing public database files or Git history.
+
 ```powershell
 .\scripts\Test.ps1
 ```

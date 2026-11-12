@@ -8,6 +8,7 @@
     <Reference Include="CapstoneProject"><HintPath>$(CapstoneAssembly)</HintPath></Reference>
     <Compile Include="RegressionTests.cs"/>
     <Compile Include="WorkspaceTests.cs"/>
+    <Compile Include="ApprovedBatchTests.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

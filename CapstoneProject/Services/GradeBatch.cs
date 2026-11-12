@@ -17,7 +17,7 @@ namespace CapstoneProject.Services
                 {
                     var periods = new List<decimal?>();
                     foreach (var field in new[] { "prelim", "midterm", "final" })
-                        periods.Add(string.IsNullOrWhiteSpace(Convert.ToString(row[field])) ? (decimal?)null : decimal.Parse(Convert.ToString(row[field])));
+                        periods.Add(string.IsNullOrWhiteSpace(Convert.ToString(row[field])) ? (decimal?)null : GradeCalculator.ParseStored(Convert.ToString(row[field])));
                     decimal? average = periods.TrueForAll(x => x.HasValue) ? GradeCalculator.Average(periods[0].Value, periods[1].Value, periods[2].Value) : (decimal?)null;
                     var values = new List<object> { periods[0]?.ToString(CultureInfo.InvariantCulture), periods[1]?.ToString(CultureInfo.InvariantCulture), periods[2]?.ToString(CultureInfo.InvariantCulture), average.HasValue ? (object)average.Value : DBNull.Value, average.HasValue ? GradeCalculator.ConvertAverage(average.Value).ToString("0.00", CultureInfo.InvariantCulture) : null, Convert.ToInt32(row["course_id", DataRowVersion.Original]) };
                     string sql = "UPDATE tbl_Course SET prelim=?,midterm=?,final=?,average=?,convert_average=? WHERE course_id=?";

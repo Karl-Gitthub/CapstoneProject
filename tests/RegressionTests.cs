@@ -43,7 +43,11 @@ internal static class RegressionTests
             if(args.Contains("--unit-only")) { Console.WriteLine(passed+" passed; Access integration and UI rendering explicitly skipped."); return 0; }
             string repo=args[0];
             fixtureDirectory=Path.Combine(repo,"artifacts","tests",Guid.NewGuid().ToString("N")); Directory.CreateDirectory(fixtureDirectory);
-            foreach(var file in new[]{"dbStudentManagement.accdb","dbUserManagement.accdb","db_GradingManagement.accdb","dbCourseManagement.accdb"}) File.Copy(Path.Combine(repo,"New folder",file),Path.Combine(fixtureDirectory,file));
+            int seedArgument = Array.IndexOf(args, "--seed-directory");
+            if (seedArgument < 0 || seedArgument + 1 >= args.Length) throw new ArgumentException("Run scripts/Test.ps1 to generate fresh synthetic test databases.");
+            string seedDirectory = args[seedArgument + 1];
+            if (!File.Exists(Path.Combine(seedDirectory, "synthetic-seed.json"))) throw new ArgumentException("Synthetic seed manifest is missing.");
+            foreach(var file in new[]{"dbStudentManagement.accdb","dbUserManagement.accdb","db_GradingManagement.accdb","dbCourseManagement.accdb"}) File.Copy(Path.Combine(seedDirectory,file),Path.Combine(fixtureDirectory,file));
             Environment.SetEnvironmentVariable("CAPSTONE_DATA_DIR",fixtureDirectory);
             AppDomain.CurrentDomain.SetData("DataDirectory",fixtureDirectory);
             Clear("dbStudentManagement.accdb",new[]{"tbl_BSITStud_Credentials","tbl_BSITStud_Address","tbl_BSITStud_ContactDetail","tbl_BSITStud_SchoolBackground","tbl_BSITStud_Detail"});

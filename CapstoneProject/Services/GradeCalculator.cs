@@ -1,9 +1,29 @@
 using System;
+using System.Globalization;
 
 namespace CapstoneProject.Services
 {
     public static class GradeCalculator
     {
+        // Period columns have an invariant decimal-string contract. Never accept
+        // thousands separators: "8.5" must not become 85 on a comma-decimal PC.
+        private const NumberStyles GradeStyles = NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
+        public static bool TryParseStored(string value, out decimal grade)
+        {
+            return decimal.TryParse(value, GradeStyles, CultureInfo.InvariantCulture, out grade);
+        }
+        public static bool TryParseInput(string value, out decimal grade)
+        {
+            return decimal.TryParse(value, GradeStyles, CultureInfo.CurrentCulture, out grade);
+        }
+        public static decimal ParseStored(string value)
+        {
+            decimal grade;
+            if (!TryParseStored(value, out grade))
+                throw new ArgumentException("A grade is not a valid stored decimal. Reload the class and review its grades before saving.");
+            Validate(grade);
+            return grade;
+        }
         public static decimal Average(decimal prelim, decimal midterm, decimal final)
         {
             Validate(prelim);
