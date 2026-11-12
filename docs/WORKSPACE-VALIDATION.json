@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-12",
+  "build": "x64 / .NET Framework 4.7.2",
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test.ps1",
+  "checksPassed": 126,
+  "result": "126 passed. Integration tests used disposable Access copies. UI scaling renders are simulated, not OS DPI changes.",
+  "database": "Disposable Access copies; source database files unchanged",
+  "runtimePages": 14,
+  "migrationSmoke": "scripts/Start-Local.ps1 -NoLaunch succeeded",
+  "limitations": [
+    "Actual Windows DPI changes not tested",
+    "Physical printer output not tested",
+    "Reports are internal copies",
+    "Azure and automated email are unconfigured"
+  ]
+}

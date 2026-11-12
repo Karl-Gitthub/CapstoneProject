@@ -1,0 +1,48 @@
+{
+  "screens": 25,
+  "resolution": "1600 × 1000",
+  "editableSources": 25,
+  "contrast": [
+    {
+      "label": "White on navy",
+      "ratio": 12.72,
+      "minimum": 4.5
+    },
+    {
+      "label": "Body ink on white",
+      "ratio": 13.05,
+      "minimum": 4.5
+    },
+    {
+      "label": "Muted text on neutral",
+      "ratio": 5.06,
+      "minimum": 4.5
+    },
+    {
+      "label": "Link blue on white",
+      "ratio": 7.02,
+      "minimum": 4.5
+    },
+    {
+      "label": "Navy on gold",
+      "ratio": 6.77,
+      "minimum": 4.5
+    },
+    {
+      "label": "Pending label on soft yellow",
+      "ratio": 6.53,
+      "minimum": 4.5
+    },
+    {
+      "label": "Success label on pale green",
+      "ratio": 6.36,
+      "minimum": 4.5
+    },
+    {
+      "label": "Error text on pale red",
+      "ratio": 6.37,
+      "minimum": 4.5
+    }
+  ],
+  "limits": "Static design artifacts. No claim of implemented features, behavior tests or OS DPI verification."
+}

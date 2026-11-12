@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Rebuildable download bundle; editable design sources and PNGs are tracked.
+/design/spcc-blue-white-yellow-designs.zip

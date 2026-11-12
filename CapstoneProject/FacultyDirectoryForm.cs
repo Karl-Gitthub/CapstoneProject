@@ -7,8 +7,8 @@ namespace CapstoneProject
 {
     public partial class FacultyDirectoryForm : Form
     {
-        OleDbConnection connection = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\dbUserManagement.accdb");
-        OleDbConnection conn = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\db_GradingManagement.accdb");
+        OleDbConnection connection = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("dbUserManagement.accdb"));
+        OleDbConnection conn = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("db_GradingManagement.accdb"));
         OleDbCommand comm;
         OleDbDataReader reader;
         public static FacultyDirectoryForm instance;
