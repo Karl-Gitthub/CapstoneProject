@@ -1,6 +1,6 @@
 # Shared workspace implementation
 
-The blue, white and yellow design study is implemented as native Windows Forms screens on .NET Framework 4.7.2. `LoginForm` now opens `Presentation/SchoolWorkspace` for every role. The active navigation does not instantiate the older disconnected forms. The separate Deskflow web project outside this repository was left untouched.
+The blue, white and yellow design is implemented as native Windows Forms screens on .NET Framework 4.7.2. `LoginForm` opens `Presentation/SchoolWorkspace` for every role. Active navigation uses the shared workspace and authenticated services.
 
 ## Working workflows
 
@@ -26,7 +26,7 @@ The blue, white and yellow design study is implemented as native Windows Forms s
 
 `SchoolService` is the authenticated workflow boundary. `AccessPolicy` checks current account status/version and role/program restrictions. `StudentStore`, `GradeBatch` and `AccountAdministration` own transaction and concurrency rules. Database commands use positional parameters and explicit types. User values never supply table or column identifiers; program catalog identifiers come from a fixed BSIT/BSBA whitelist.
 
-Source Access files remain unchanged. `SchemaMigrator` adds version-3 workflow tables and account metadata to working copies, taking file backups first. Original account roles are preserved; no existing user is silently promoted to administrator. First-admin setup is an explicit local setup action. The old administrator-password bypass remains removed.
+Fresh installations generate sample Access databases from the schema in `scripts/New-SyntheticData.ps1`; database binaries and record exports are excluded from the current tracked source. Existing working databases remain local. `SchemaMigrator` adds version-3 workflow tables and account metadata, taking file backups first. Existing account roles are preserved. First-admin setup requires credentials chosen locally.
 
 Registration state is locked while confirming enrollment. Teaching-assignment and account-admin writes are serialized inside their respective database transactions. The migrations themselves are not distributed transactions across files. Restore the complete matching backup set if a schema upgrade must be rolled back.
 

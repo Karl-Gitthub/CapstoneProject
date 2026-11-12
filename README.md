@@ -1,6 +1,6 @@
 # CapstoneProject — Student Records
 
-C# Windows Forms student records, enrollment and grading application. The root solution targets **.NET Framework 4.7.2** and now uses a shared blue, white and gold workspace for registrar, coordinator, faculty and administrator accounts. Azure integration remains planned and is **not implemented or deployed**.
+A C# Windows Forms application for student records, enrollment and grading, maintained by [Karl-Gitthub](https://github.com/Karl-Gitthub). The root solution targets **.NET Framework 4.7.2**, with blue, white and gold workspaces for registrar, coordinator, faculty and administrator accounts. Azure integration is planned.
 
 ## Run locally
 
@@ -12,9 +12,9 @@ From the repository root in Windows PowerShell:
 .\scripts\Start-Local.ps1
 ```
 
-This builds a separate executable under `artifacts/runs`, preserves the five working databases in `CapstoneProject/bin/x64/Debug/Data`, applies backed-up workflow migrations, and opens login. A running older executable does not block the new build. The original repository databases are preserved; existing working copies are never replaced by setup. Close database users when applying a schema upgrade.
+This builds an executable under `artifacts/runs` and opens login. A fresh installation generates five Access databases with clearly labelled sample students, faculty and courses in `CapstoneProject/bin/x64/Debug/Data`. There are no default accounts or passwords. Existing complete working databases are preserved and receive backed-up workflow migrations. Incomplete database sets are rejected. Close database users when applying a schema upgrade.
 
-Use an existing account from your local database. Successful legacy logins upgrade that account's plaintext password to a salted PBKDF2 hash in the working copy. Role, program and faculty access come from the verified account. Staff can request access from login; an administrator verifies and approves the request before the chosen password becomes active.
+For a new installation, provision the first administrator below, then sign in with the credentials chosen during setup. Existing installations keep their accounts. Role, program and faculty access come from the verified account. Staff can request access from login; an administrator verifies and approves the request before the chosen password becomes active.
 
 To create the **first** administrator, the person responsible for local setup runs:
 
@@ -30,11 +30,11 @@ For a read-only preview using synthetic records without login or database setup:
 .\scripts\Start-Local.ps1 -Preview
 ```
 
-`CAPSTONE_DATA_DIR` selects a working-copy directory for a directly launched executable. The launch script selects the existing local working directory explicitly. To migrate a different directory, pass its absolute path to `scripts/Initialize-LocalData.ps1 -DataDirectory` and pass the freshly built executable through `-ApplicationPath`. Never select source databases. Migration backups are stored beside each changed working database. To roll back, close the app, preserve the current working files separately and restore the matching pre-migration set. These are file-level backups; there is no distributed transaction across all Access files.
+Use `-DataDirectory` with both `Start-Local.ps1` and `Provision-Admin.ps1` to select the same separate data directory. `CAPSTONE_DATA_DIR` selects data for a directly launched executable. Migration backups are stored beside each changed database. To roll back, close the app, preserve the current working files separately and restore the matching pre-migration set. There is no distributed transaction across Access files.
 
 ## Verify
 
-For a separate demonstration with freshly generated databases and no default accounts, see [approved fixes and synthetic data setup](docs/APPROVED-FIXES.md). This preparation does not remove existing public database files or Git history.
+See [data setup and correctness notes](docs/DATA-SETUP.md) and [data handling](docs/DATA-SAFETY.md). Database binaries and record exports are excluded from the current source tree. Older Git revisions still contain legacy files; password invalidation and history cleanup remain outstanding.
 
 ```powershell
 .\scripts\Test.ps1

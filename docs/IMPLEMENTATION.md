@@ -2,7 +2,7 @@
 
 This page describes the earlier foundation stage. For the current role-based workspace, enrollment, account and report implementation, read [WORKSPACE-IMPLEMENTATION.md](WORKSPACE-IMPLEMENTATION.md).
 
-Source baseline: commit `0289ea4818abe94f3b93d1b591c41dd27b8b9d95`. Work is isolated on `codex/winforms-foundation`; the unrelated Deskflow application outside this checkout is unchanged.
+Source baseline: commit `0289ea4818abe94f3b93d1b591c41dd27b8b9d95`.
 
 ## Changes
 
@@ -12,7 +12,7 @@ Login now uses a parameterized username lookup, verifies the credential separate
 
 Student registration uses the inspected Access schema, including the actual credential column names. The original empty-command replacement, premature success notification and unused binary photo conversion were removed. Five inserts run in a transaction; the existing student identifier primary key remains intact. Required names/ID, dates, program, field length and email are validated. Input remains available after failure.
 
-The user selected decimal averages. The calculator retains equal weighting and the original lower bounds: 96, 94, 92, 89, 87, 84, 80, 78 and 75. A result of 95.67 therefore converts to 1.25, while 96.00 converts to 1.00. Calculations use decimal; Access persists the average as DOUBLE, with normal binary floating-point storage limits. The UI displays two decimals without rounding before conversion.
+Averages retain decimals, with equal weighting and the original lower bounds: 96, 94, 92, 89, 87, 84, 80, 78 and 75. A result of 95.67 therefore converts to 1.25, while 96.00 converts to 1.00. Calculations use decimal; Access persists the average as DOUBLE, with normal binary floating-point storage limits. The UI displays two decimals without rounding before conversion.
 
 Grade retrieval accommodates ACE's restriction on joining Memo columns: short-text join expressions are followed by a full identifier comparison. Updates identify the selected enrollment through `course_id`, compare the original grade values and reject stale writes. The other semester's enrollment remains unchanged.
 

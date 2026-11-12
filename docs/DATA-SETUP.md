@@ -1,12 +1,12 @@
-# Approved correctness fixes and synthetic seed preparation
+# Local data setup and academic correctness
 
-This batch retains WinForms and the current visual design. It does not rotate credentials, rewrite history, replace existing data files, publish to GitHub, or deploy Azure services.
+The application retains WinForms and its blue, white and gold design. Fresh installations use generated sample databases. Existing working data is preserved. Azure services are planned separately.
 
 ## Grade persistence
 
 Period values use invariant decimal strings (`8.5`) at the service/database boundary. Grid formatting and parsing use the Windows culture, without accepting thousands separators. On a German locale the user sees and enters `8,5`; the bound value and persisted value remain `8.5`. Averages retain decimals. Blank periods remain incomplete rather than zero.
 
-Ambiguous stored strings such as `8,5` are rejected instead of being silently reinterpreted. This batch does not automatically rewrite historical grades. Any previously corrupted records require review against the school's source records.
+Ambiguous stored strings such as `8,5` are rejected instead of being silently reinterpreted. Historical grades are not automatically rewritten. Any previously corrupted records require review against the school's source records.
 
 ## Program transfers
 
@@ -41,7 +41,7 @@ $env:CAPSTONE_DATA_DIR=(Resolve-Path .\artifacts\demo-data).Path
 & .\CapstoneProject\bin\x64\Debug\CapstoneProject.exe
 ```
 
-Create your own first-administrator credentials in the setup dialog. This does not rotate any existing account. The usual launch/provision scripts continue to select their existing working directory; use the explicit commands above for this separate demonstration.
+Create your own first-administrator credentials in the setup dialog. Existing accounts are preserved. The launch and provision scripts also accept `-DataDirectory`; pass the same directory to both scripts when using a separate demonstration.
 
 `-SchemaOnly` produces empty base schemas without sample records or application migration. The regression runner generates these schemas and copies them into disposable fixtures, rather than copying committed account/student databases. This keeps the legacy compatibility tests while removing their dependence on exposed seed records.
 
@@ -51,6 +51,6 @@ Validation on 12 November 2026: the final build succeeded and all **143 checks p
 
 Run `scripts/Test.ps1` for calculation, locale, service, transfer-authorization, transactional enrollment, competing-client, actual grid-edit, and rendering checks. UI renders do not substitute for actual OS DPI, screen-reader, or printer testing. Test-generated files and seed binaries belong under ignored `artifacts`.
 
-The prepared generator does **not** remove the old public databases or earlier revisions. Before shared/real use, the owner must approve and coordinate credential invalidation, decide which records are synthetic, review all tracked database/SQL exports, replace or remove exposed current files, and separately decide whether to rewrite Git history. History cleanup alone cannot revoke a copied password. No such external or destructive action was performed in this batch.
+Legacy database binaries and the record-data SQL export have been removed from the current tracked source. Their local copies remain ignored, and setup generates fresh sample databases instead of reading those files. Earlier Git revisions still contain the old records and password values. Any credentials that were used must be invalidated separately, and history cleanup needs a coordinated decision. Removing an old file does not revoke a copied password.
 
 Database constraints on the newer workflow tables, durable authentication controls, richer audit records, report improvements, academic lifecycle features, and Azure identity/API deployment remain later audit items.

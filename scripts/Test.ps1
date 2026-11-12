@@ -17,3 +17,6 @@ else {
 }
 & (Join-Path $repoRoot 'tests\bin\Capstone.RegressionTests.exe') @arguments | Tee-Object -FilePath (Join-Path $verificationDirectory 'test-results.txt')
 if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }
+if (!$UnitOnly) {
+    & (Join-Path $repoRoot 'tests\LocalSetup.Tests.ps1') -ApplicationPath (Join-Path $verificationDirectory 'CapstoneProject.exe') -TestRoot (Join-Path $verificationDirectory 'local-setup-tests') | Tee-Object -FilePath (Join-Path $verificationDirectory 'setup-test-results.txt')
+}
