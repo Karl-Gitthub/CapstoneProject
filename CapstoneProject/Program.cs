@@ -9,11 +9,13 @@ namespace CapstoneProject
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginForm());
+            AppDomain.CurrentDomain.SetData("DataDirectory", Infrastructure.Database.DirectoryPath);
+            if (Array.IndexOf(args,"--preview-students")>=0) Application.Run(new RegistrarDirectoryForm(true));
+            else Application.Run(new LoginForm());
         }
     }
 }

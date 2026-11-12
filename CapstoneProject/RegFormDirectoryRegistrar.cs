@@ -7,10 +7,10 @@ namespace CapstoneProject
 {
     public partial class RegFormDirectoryRegistrar : Form
     {
-        OleDbConnection connection = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\dbCourseManagement.accdb");
-        OleDbConnection conn = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\dbStudentManagement.accdb");
-        OleDbConnection con = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\db_Temp_RegForm.accdb");
-        OleDbConnection gr = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\db_GradingManagement.accdb");
+        OleDbConnection connection = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("dbCourseManagement.accdb"));
+        OleDbConnection conn = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("dbStudentManagement.accdb"));
+        OleDbConnection con = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("db_Temp_RegForm.accdb"));
+        OleDbConnection gr = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("db_GradingManagement.accdb"));
         OleDbCommand comm;
         OleDbDataReader reader;
         public RegFormDirectoryRegistrar()

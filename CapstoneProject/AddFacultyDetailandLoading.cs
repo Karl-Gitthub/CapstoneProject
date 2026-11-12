@@ -10,8 +10,8 @@ namespace CapstoneProject
     {
         string BSIT, BSBA;
 
-        OleDbConnection conn = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\db_GradingManagement.accdb");
-        OleDbConnection connection = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\dbCourseManagement.accdb");
+        OleDbConnection conn = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("db_GradingManagement.accdb"));
+        OleDbConnection connection = new OleDbConnection(CapstoneProject.Infrastructure.Database.ConnectionString("dbCourseManagement.accdb"));
         OleDbCommand comm;
         OleDbDataReader reader;
         public AddFacultyDetailandLoading()

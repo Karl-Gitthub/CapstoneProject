@@ -8,9 +8,6 @@ namespace CapstoneProject
     public partial class RegistrarGradeFormDirectory : Form
     {
         int index;
-        OleDbConnection connection = new OleDbConnection(@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\Users\Karl\OneDrive\Documents\CapstoneProject\New folder\db_GradingManagement.accdb");
-        OleDbCommand comm;
-        OleDbDataReader reader;
         public RegistrarGradeFormDirectory()
         {
             InitializeComponent();
@@ -77,121 +74,16 @@ namespace CapstoneProject
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            //if course code and school year are correct then these txt boxes will be enabled
-            //pls make sure to insert it in a if else clause
-            connection.Open();
-            comm = new OleDbCommand("Select course_code, school_year From tbl_Course Where course_code = '" + txtCourseCode.Text + "' And course_code = '" + txtCourseCode.Text + "' ", connection);
-            if (txtCourseCode.Text == txtCourseCode.Text && txtSY.Text == txtSY.Text)
-            {
-                comm = new OleDbCommand("Select tbl_StudentDetail.stud_id, tbl_StudentDetail.stud_fname, tbl_StudentDetail.stud_mname, tbl_StudentDetail.stud_lname, tbl_Course.prelim, tbl_Course.midterm, tbl_Course.final, tbl_Course.average, tbl_Course.convert_average From tbl_Course Inner Join tbl_StudentDetail On  Left (tbl_Course.stud_id, 255) =  left (tbl_StudentDetail.stud_id, 255) Where course_code = '" + txtCourseCode.Text + "' And school_year = '" + txtSY.Text + "' And fac_id = '" + txtFacUser.Text + "'", connection);
-
-                OleDbDataAdapter sda = new OleDbDataAdapter(comm);
-                DataTable dt = new DataTable();
-
-                sda.Fill(dt);
-                dataGridView1.DataSource = dt;
-
-                DataGridViewRow selectedRow = new DataGridViewRow();
-                //dataGridView1.Rows.Insert(0, selectedRow);  
-                txtStudPrelimGrade.Enabled = true;
-                txtStudMidtermGrade.Enabled = true;
-                txtStudFinalsGrade.Enabled = true;
-            }
-            else
-            {
-                btnAdd.Enabled = false;
-                btnAdd.Enabled = false;
-                txtStudPrelimGrade.Enabled = false;
-                txtStudMidtermGrade.Enabled = false;
-                txtStudFinalsGrade.Enabled = false;
-            }
-            connection.Close();
+            try {
+                var table = new Services.GradeRepository().Search(txtCourseCode.Text.Trim(),txtSY.Text.Trim(),txtFacUser.Text.Trim());
+                dataGridView1.DataSource=table;
+                foreach(var name in new[]{"course_id","sem","school_year"}) if(dataGridView1.Columns.Contains(name)) dataGridView1.Columns[name].Visible=false;
+            } catch(Exception ex) { System.Diagnostics.Trace.TraceError("Grade search: {0}",ex.GetType().Name); MessageBox.Show(this,Infrastructure.Database.FailureMessage,"Grades"); }
         }
 
         private void btnAddGrade_Click(object sender, EventArgs e)
         {
-            double prelim, midterm, final, ave, con_ave;
-            txtStudNum.Enabled = false;
-            //txtStName.Enabled = false;
-            txtStudPrelimGrade.Enabled = true;
-            txtStudMidtermGrade.Enabled = true;
-            txtStudFinalsGrade.Enabled = true;
-            txtStudAG.Enabled = true;
-            txtStudCG.Enabled = true;
-            //reactivate btn confirm
-            btnConfirm.Enabled = true;
-
-
-            //DataGridViewRow newdata = this.dataGridView1.Rows[index];
-            // newdata.Cells[4].Value = txtStudPrelimGrade.Text;
-
-
-            connection.Open();
-            index = dataGridView1.SelectedRows[0].Index;
-            if (index >= 0)
-            {
-                foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                {
-
-                    newdata.Cells[4].Value = txtStudPrelimGrade.Text;
-                    comm = new OleDbCommand("Update tbl_Course Set prelim = '" + txtStudPrelimGrade.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                    comm.Parameters.AddWithValue("@prelim", txtStudPrelimGrade.Text);
-                    comm.ExecuteNonQuery();
-                    comm.Parameters.Clear();
-                }
-
-            }
-
-            connection.Close();
-
-            connection.Open();
-            index = dataGridView1.SelectedRows[0].Index;
-            if (index >= 0)
-            {
-                foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                {
-
-                    newdata.Cells[5].Value = txtStudMidtermGrade.Text;
-                    comm = new OleDbCommand("Update tbl_Course Set midterm = '" + txtStudMidtermGrade.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                    comm.Parameters.AddWithValue("@midterm", txtStudMidtermGrade.Text);
-                    comm.ExecuteNonQuery();
-                    comm.Parameters.Clear();
-                }
-
-            }
-            connection.Close();
-
-            connection.Open();
-            index = dataGridView1.SelectedRows[0].Index;
-            if (index >= 0)
-            {
-                foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                {
-
-                    newdata.Cells[6].Value = txtStudFinalsGrade.Text;
-                    comm = new OleDbCommand("Update tbl_Course Set final = '" + txtStudFinalsGrade.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                    comm.Parameters.AddWithValue("@final", txtStudFinalsGrade.Text);
-                    comm.ExecuteNonQuery();
-                    comm.Parameters.Clear();
-                }
-
-            }
-            connection.Close();
-
-
-            /* connection.Open();
-
-             prelim = int.Parse(txtStudPrelimGrade.Text);
-             midterm = int.Parse(txtStudMidtermGrade.Text);
-             final = int.Parse(txtStudFinalsGrade.Text);
-             //ave = int.Parse(txtStudAG.Text);
-             //con_ave = int.Parse(txtStudCG.Text);
-
-             ave = prelim + midterm + final;
-
-             con_ave = ave / 3;
-
-             connection.Close();*/
+            SaveSelectedGrade();
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
@@ -209,7 +101,7 @@ namespace CapstoneProject
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            btnConfirm.Enabled = false;
+            SaveSelectedGrade();
         }
 
         private void btnGenAList_Click(object sender, EventArgs e)
@@ -223,28 +115,19 @@ namespace CapstoneProject
 
         private void txtFacUser_TextChanged(object sender, EventArgs e)
         {
-            connection.Open();
-            comm = new OleDbCommand("Select fac_fname, fac_mname, fac_lname From tbl_FacultyDetail Where fac_id = '" + txtFacUser.Text + "'", connection);
-            comm.Parameters.AddWithValue("fac_id", txtFacUser.Text);
-            reader = comm.ExecuteReader();
-            while (reader.Read())
-            {
-                lblfname.Text = reader.GetValue(0).ToString();
-                lblmname.Text = reader.GetValue(1).ToString();
-                lblname.Text = reader.GetValue(2).ToString();
-            }
-            connection.Close();
-
-
+            try {
+                using(var db=Infrastructure.Database.Open("db_GradingManagement.accdb"))
+                using(var query=Infrastructure.Database.Command(db,null,"SELECT fac_fname,fac_mname,fac_lname FROM tbl_FacultyDetail WHERE fac_id=?",txtFacUser.Text))
+                using(var result=query.ExecuteReader()) { if(result.Read()) { lblfname.Text=Convert.ToString(result[0]); lblmname.Text=Convert.ToString(result[1]); lblname.Text=Convert.ToString(result[2]); } }
+            } catch(Exception ex) { System.Diagnostics.Trace.TraceError("Faculty lookup: {0}",ex.GetType().Name); }
         }
 
         private void RegistrarGradeFormDirectory_Load(object sender, EventArgs e)
         {
-            // TODO: This line of code loads data into the 'db_GradingManagementDataSet1.tbl_FacultyDetail' table. You can move, or remove it, as needed.
-            this.tbl_FacultyDetailTableAdapter.Fill(this.db_GradingManagementDataSet1.tbl_FacultyDetail);
-            // TODO: This line of code loads data into the 'db_GradingManagementDataSet.tbl_Course' table. You can move, or remove it, as needed.
-            this.tbl_CourseTableAdapter.Fill(this.db_GradingManagementDataSet.tbl_Course);
-
+            txtStudAG.ReadOnly=true; txtStudCG.ReadOnly=true;
+            this.tbl_FacultyDetailTableAdapter.Connection.ConnectionString=Infrastructure.Database.ConnectionString("db_GradingManagement.accdb");
+            try { this.tbl_FacultyDetailTableAdapter.Fill(this.db_GradingManagementDataSet1.tbl_FacultyDetail); }
+            catch(Exception ex) { System.Diagnostics.Trace.TraceError("Faculty list: {0}",ex.GetType().Name); MessageBox.Show(this,Infrastructure.Database.FailureMessage,"Grades"); }
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -274,288 +157,37 @@ namespace CapstoneProject
 
         private void btncalcu_Click(object sender, EventArgs e)
         {
-            int prelim, midterm, final;
-
-            prelim = int.Parse(txtStudPrelimGrade.Text);
-            midterm = int.Parse(txtStudMidtermGrade.Text);
-            final = int.Parse(txtStudFinalsGrade.Text);
-
-            int ave;
-            double con_ave;
-
-
-
-            if (prelim > 0 && midterm > 0 && final > 0)
-            {
-                ave = (prelim + midterm + final) / 3;
-                txtStudAG.Text = ave.ToString();
-
-                //GRADES 96 - 100
-                if (ave >= 96 && ave <= 100)
-                {
-                    con_ave = 1.00;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 94 - 95
-                else if (ave >= 94 && ave <= 95)
-                {
-                    con_ave = 1.25;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 92 - 23
-                else if (ave >= 92 && ave <= 93)
-                {
-                    con_ave = 1.50;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 89 - 91
-                else if (ave >= 89 && ave <= 91)
-                {
-                    con_ave = 1.75;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 87 - 88
-                else if (ave >= 87 && ave <= 88)
-                {
-                    con_ave = 2.00;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 84 - 86
-                else if (ave >= 84 && ave <= 86)
-                {
-                    con_ave = 2.25;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 80 - 83
-                else if (ave >= 80 && ave <= 83)
-                {
-                    con_ave = 2.50;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 78 - 79
-                else if (ave >= 78 && ave <= 79)
-                {
-                    con_ave = 2.75;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-                //GRADES 75 - 77
-                else if (ave >= 75 && ave <= 77)
-                {
-                    con_ave = double.Parse(txtStudCG.Text);
-                    con_ave = 3.00;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-                    connection.Close();
-                }
-                //GRADES FAILED
-                else if (ave > 74)
-                {
-                    con_ave = 5.00;
-                    txtStudCG.Text = con_ave.ToString();
-                    connection.Open();
-                    index = dataGridView1.SelectedRows[0].Index;
-                    if (index >= 0)
-                    {
-                        foreach (DataGridViewRow newdata in dataGridView1.SelectedRows)
-                        {
-
-                            newdata.Cells[7].Value = txtStudAG.Text.ToString();
-                            newdata.Cells[8].Value = txtStudCG.Text.ToString();
-
-                            comm = new OleDbCommand("Update tbl_Course Set average = '" + txtStudAG.Text + "', convert_average = '" + txtStudCG.Text + "' Where stud_id = '" + txtStudNum.Text + "' And course_code = '" + txtCourseCode.Text + "'", connection);
-                            comm.Parameters.AddWithValue("@average", txtStudAG.Text.ToString());
-                            comm.Parameters.AddWithValue("@convert_average", txtStudCG.Text.ToString());
-                            comm.ExecuteNonQuery();
-                            comm.Parameters.Clear();
-                        }
-
-                    }
-
-                    connection.Close();
-                }
-            }
+            decimal prelim,midterm,final;
+            if (!TryGrades(out prelim,out midterm,out final)) return;
+            decimal average=Services.GradeCalculator.Average(prelim,midterm,final);
+            txtStudAG.Text=average.ToString("0.00");
+            txtStudCG.Text=Services.GradeCalculator.ConvertAverage(average).ToString("0.00");
         }
 
         private void txtStudCG_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private bool TryGrades(out decimal prelim,out decimal midterm,out decimal final)
+        {
+            prelim=midterm=final=0;
+            if(!decimal.TryParse(txtStudPrelimGrade.Text,out prelim)||!decimal.TryParse(txtStudMidtermGrade.Text,out midterm)||!decimal.TryParse(txtStudFinalsGrade.Text,out final)) { MessageBox.Show(this,"Enter all three numeric grades. Missing grades are not zero.","Check grades"); return false; }
+            try { Services.GradeCalculator.Average(prelim,midterm,final); return true; }
+            catch(ArgumentOutOfRangeException) { MessageBox.Show(this,"Grades must be from 0 to 100.","Check grades"); return false; }
+        }
+        private void SaveSelectedGrade()
+        {
+            var view=dataGridView1.CurrentRow==null?null:dataGridView1.CurrentRow.DataBoundItem as DataRowView;
+            if(view==null) { MessageBox.Show(this,"Search and select an enrollment before saving.","Grades"); return; }
+            decimal prelim,midterm,final; if(!TryGrades(out prelim,out midterm,out final)) return;
+            try {
+                new Services.GradeRepository().Save(view.Row,prelim,midterm,final);
+                btnSearch_Click(this,EventArgs.Empty);
+                btncalcu_Click(this,EventArgs.Empty);
+                MessageBox.Show(this,"Grades saved.","Grades");
+            } catch(DBConcurrencyException ex) { MessageBox.Show(this,ex.Message,"Record changed"); }
+            catch(Exception ex) { System.Diagnostics.Trace.TraceError("Grade save: {0}",ex.GetType().Name); MessageBox.Show(this,Infrastructure.Database.FailureMessage,"Grades not saved"); }
         }
     }
 }
