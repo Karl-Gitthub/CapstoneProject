@@ -1,0 +1,277 @@
+[
+  {
+    "id": "01",
+    "title": "Login",
+    "filename": "01-login",
+    "notes": [
+      "Replace the oversized borderless login with a compact, resizable native window.",
+      "Remove department selection: derive role and program from the verified account.",
+      "Keep sign-in primary; separate password recovery and access requests."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "02",
+    "title": "Request staff access",
+    "filename": "02-request-staff-access",
+    "notes": [
+      "Replace the hardcoded ADMIN gate with an approval or invitation workflow.",
+      "Do not allow users to choose privileged roles during registration.",
+      "Confirm receipt with the same response regardless of account existence."
+    ],
+    "status": "Proposed feature"
+  },
+  {
+    "id": "03",
+    "title": "Password recovery",
+    "filename": "03-password-recovery",
+    "notes": [
+      "Add a real recovery provider before enabling this link.",
+      "Use neutral responses that do not expose registered accounts.",
+      "Preserve the same field and button positions as login."
+    ],
+    "status": "Proposed feature"
+  },
+  {
+    "id": "04",
+    "title": "Registrar workspace",
+    "filename": "04-registrar-workspace",
+    "notes": [
+      "Use a work queue rather than oversized vanity metrics or decorative charts.",
+      "Keep student search and common tasks within one click.",
+      "Show only counts that correspond to a real filtered list."
+    ],
+    "status": "Proposed workspace"
+  },
+  {
+    "id": "05",
+    "title": "Student directory",
+    "filename": "05-student-directory",
+    "notes": [
+      "Replace dense vertical cell borders with readable horizontal row separators.",
+      "Keep program filtering next to search; put term selection in enrollment and grade contexts.",
+      "Make the selected record and its next action explicit."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "06",
+    "title": "Student profile",
+    "filename": "06-student-profile",
+    "notes": [
+      "Use one student record with tabs instead of unrelated windows for each document.",
+      "Keep the student identity visible while changing tabs.",
+      "Separate record completeness from enrollment or academic standing."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "07",
+    "title": "Student identity",
+    "filename": "07-student-identity",
+    "notes": [
+      "Group fields into four stable sections instead of a long paper-like canvas.",
+      "Use calendar controls and derive age from birth date.",
+      "Validate inline and retain every entered field after failure."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "08",
+    "title": "Student contact and address",
+    "filename": "08-student-contact-and-address",
+    "notes": [
+      "Use complete address labels instead of unexplained abbreviations.",
+      "Preserve phone numbers and postal codes as text, including leading zeros.",
+      "Keep personal contact data off list screens and dashboard summaries."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "09",
+    "title": "Student prior education",
+    "filename": "09-student-prior-education",
+    "notes": [
+      "Give primary and secondary education their own clearly separated groups.",
+      "Use a year field rather than a full date picker for year completed.",
+      "Avoid duplicate labels with unclear school-year meaning."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "10",
+    "title": "Student credentials",
+    "filename": "10-student-credentials",
+    "notes": [
+      "Replace a wall of unrelated dropdowns with a document checklist.",
+      "Distinguish Missing, Received and Not applicable using words and color.",
+      "Show review notes only when there is an action to take."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "11",
+    "title": "Enrollment workspace",
+    "filename": "11-enrollment-workspace",
+    "notes": [
+      "Use an editable subject grid instead of eight repeated subject-code fields.",
+      "Keep the term and student identity visible throughout enrollment.",
+      "Show totals and conflicts next to the confirmation action."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "12",
+    "title": "Coordinator workspace",
+    "filename": "12-coordinator-workspace",
+    "notes": [
+      "Scope the whole workspace to the coordinator’s program rather than showing disabled other-program buttons.",
+      "Keep pending registrations and unassigned teaching loads as the main work lists.",
+      "Avoid unrelated registrar actions in coordinator navigation."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "13",
+    "title": "Pending registration review",
+    "filename": "13-pending-registration-review",
+    "notes": [
+      "Use a split review layout so the queue stays visible.",
+      "Replace vague Submit and Update buttons with actions that name the outcome.",
+      "Require a clear correction reason; avoid silently rejecting a record."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "14",
+    "title": "Faculty details and loading",
+    "filename": "14-faculty-details-and-loading",
+    "notes": [
+      "Separate faculty profile editing from teaching-load assignment.",
+      "Replace repeated code fields with an assignment table.",
+      "Show course, section, term and instructor together to prevent ambiguous assignments."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "15",
+    "title": "Faculty workspace",
+    "filename": "15-faculty-workspace",
+    "notes": [
+      "Show only assigned classes. Remove the need to retype a faculty username.",
+      "Make grade completion visible at the class level.",
+      "Use class-specific actions instead of a generic dashboard full of metrics."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "16",
+    "title": "Grade entry",
+    "filename": "16-grade-entry",
+    "notes": [
+      "Use in-grid editing with one save action, rather than repeated Add, Calculate and Confirm controls.",
+      "Keep calculated average/equivalent fields read-only.",
+      "Display unsaved changes and stale-record conflicts explicitly."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "17",
+    "title": "Curriculum evaluation",
+    "filename": "17-curriculum-evaluation",
+    "notes": [
+      "Use a year/semester outline instead of one very long fixed-position form.",
+      "Preserve course order and show passed, incomplete and not enrolled as distinct states.",
+      "Keep evaluation and official transcript output separate."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "18",
+    "title": "Reports workspace",
+    "filename": "18-reports-workspace",
+    "notes": [
+      "Consolidate four Generate buttons into one report workspace.",
+      "Make student, class and term requirements explicit for each document.",
+      "Separate filter controls from the document page; preview the exact print layout."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "19",
+    "title": "Copy of grades",
+    "filename": "19-copy-of-grades",
+    "notes": [
+      "Use an actual print preview with consistent A4 margins and restrained institutional branding.",
+      "Keep toolbars off the printed page.",
+      "Require verified grades before producing an official document."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "20",
+    "title": "Computed class grades",
+    "filename": "20-computed-class-grades",
+    "notes": [
+      "Keep this screen read-only and visually distinct from grade editing.",
+      "Align numeric columns and use a consistent number of decimal places.",
+      "Use one class/term context rather than repeating faculty identity fields."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "21",
+    "title": "Alphalist preview",
+    "filename": "21-alphalist-preview",
+    "notes": [
+      "Sort names alphabetically and make program, year, section and term visible.",
+      "Remove Clear and generic Go back actions from the print canvas.",
+      "Use repeatable table headers and page numbering for longer rosters."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "22",
+    "title": "Transcript preview",
+    "filename": "22-transcript-preview",
+    "notes": [
+      "Use the school’s approved transcript template and official signatory rules.",
+      "Separate document generation permissions from ordinary record access.",
+      "Do not invent seals, signatures, certification language or official claims."
+    ],
+    "status": "Redesign concept"
+  },
+  {
+    "id": "23",
+    "title": "Staff access administration",
+    "filename": "23-staff-access-administration",
+    "notes": [
+      "Replace the desktop admin password panel with a real authorized administration area.",
+      "Separate role from program scope and class assignment.",
+      "Require explicit review and an audit record for access changes."
+    ],
+    "status": "Proposed feature"
+  },
+  {
+    "id": "24",
+    "title": "Navigation and interaction states",
+    "filename": "24-navigation-and-interaction-states",
+    "notes": [
+      "Reuse a single shared navigation component per role.",
+      "Keep yellow out of body text and large background areas.",
+      "Maintain keyboard focus, adequate contrast and stable control spacing."
+    ],
+    "status": "Design foundation"
+  },
+  {
+    "id": "25",
+    "title": "Empty error and save states",
+    "filename": "25-empty-error-and-save-states",
+    "notes": [
+      "Replace vague errors and console-only failures with useful in-context messages.",
+      "Never show success before persistence completes.",
+      "Preserve unsaved input and give a clear recovery action."
+    ],
+    "status": "Design foundation"
+  }
+]

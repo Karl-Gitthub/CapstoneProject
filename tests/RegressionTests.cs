@@ -39,15 +39,17 @@ internal static class RegressionTests
             Check("PBKDF2 verifies correct password only",()=>{ var hash=PasswordHash.Create("Synthetic!2026"); Equal(true,PasswordHash.Verify("Synthetic!2026",hash)); Equal(false,PasswordHash.Verify("wrong",hash)); });
             Check("password salts are unique",()=>Equal(false,PasswordHash.Create("same")==PasswordHash.Create("same")));
             Check("malformed hash fails closed",()=>Equal(false,PasswordHash.Verify("anything","pbkdf2$210000$bad$bad")));
+            WorkspaceTests.Units(Check);
             if(args.Contains("--unit-only")) { Console.WriteLine(passed+" passed; Access integration and UI rendering explicitly skipped."); return 0; }
             string repo=args[0];
             fixtureDirectory=Path.Combine(repo,"artifacts","tests",Guid.NewGuid().ToString("N")); Directory.CreateDirectory(fixtureDirectory);
-            foreach(var file in new[]{"dbStudentManagement.accdb","dbUserManagement.accdb","db_GradingManagement.accdb"}) File.Copy(Path.Combine(repo,"New folder",file),Path.Combine(fixtureDirectory,file));
+            foreach(var file in new[]{"dbStudentManagement.accdb","dbUserManagement.accdb","db_GradingManagement.accdb","dbCourseManagement.accdb"}) File.Copy(Path.Combine(repo,"New folder",file),Path.Combine(fixtureDirectory,file));
             Environment.SetEnvironmentVariable("CAPSTONE_DATA_DIR",fixtureDirectory);
             AppDomain.CurrentDomain.SetData("DataDirectory",fixtureDirectory);
             Clear("dbStudentManagement.accdb",new[]{"tbl_BSITStud_Credentials","tbl_BSITStud_Address","tbl_BSITStud_ContactDetail","tbl_BSITStud_SchoolBackground","tbl_BSITStud_Detail"});
             Clear("dbUserManagement.accdb",new[]{"tbl_UserLogin"});
             Clear("db_GradingManagement.accdb",new[]{"tbl_Course","tbl_StudentDetail","tbl_FacultyDetail"});
+            SchemaMigrator.Ensure();
             using(var db=Database.Open("dbStudentManagement.accdb")) {
                 if(!db.GetSchema("Indexes").AsEnumerable().Any(r=>Convert.ToString(r["TABLE_NAME"])=="tbl_BSITStud_Detail" && Convert.ToString(r["COLUMN_NAME"])=="studid" && Convert.ToBoolean(r["PRIMARY_KEY"]))) throw new Exception("Student identifier primary key is required.");
             }
@@ -84,6 +86,7 @@ internal static class RegressionTests
             Check("saving one enrollment preserves the other semester",()=>{ var other=grades.Search("IT101","2026-2027","FAC-SYN").AsEnumerable().Single(r=>Convert.ToInt32(r["course_id"])!=courseId); Equal(80m,Convert.ToDecimal(other["average"])); });
             Check("stale grade update is rejected",()=>Throws<DBConcurrencyException>(()=>grades.Save(enrollment,70,70,70)));
             Check("failing averages save as 5.00",()=>{ var current=grades.Search("IT101","2026-2027","FAC-SYN").AsEnumerable().Single(r=>Convert.ToInt32(r["course_id"])==courseId); grades.Save(current,74,74,74); Equal("5.00",Convert.ToString(grades.Search("IT101","2026-2027","FAC-SYN").AsEnumerable().Single(r=>Convert.ToInt32(r["course_id"])==courseId)["convert_average"])); });
+            WorkspaceTests.Integration(Check,repo);
             Application.EnableVisualStyles();
             string screenshots=Path.Combine(repo,"docs","screenshots"); Directory.CreateDirectory(screenshots);
             foreach(float factor in new[]{1f,1.25f,1.5f,2f}) {

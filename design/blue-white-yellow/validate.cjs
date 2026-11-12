@@ -1,0 +1,9 @@
+const fs=require('fs'),path=require('path');
+const root=__dirname,manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8'));
+const luminance=hex=>{const c=hex.match(/[0-9a-f]{2}/gi).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+const pairs=[['White on navy','#FFFFFF','#12335B'],['Body ink on white','#203247','#FFFFFF'],['Muted text on neutral','#5B6B7B','#F4F6F8'],['Link blue on white','#245B93','#FFFFFF'],['Navy on gold','#12335B','#E7B641'],['Pending label on soft yellow','#74520B','#FFF5D8'],['Success label on pale green','#23624A','#EAF3EE'],['Error text on pale red','#9B3035','#FAECEC']];
+const contrast=pairs.map(([label,a,b])=>{const values=[luminance(a),luminance(b)].sort((x,y)=>y-x);const ratio=(values[0]+.05)/(values[1]+.05);if(ratio<4.5)throw Error(label+' contrast failed');return {label,ratio:Number(ratio.toFixed(2)),minimum:4.5};});
+if(manifest.length!==25||new Set(manifest.map(s=>s.id)).size!==25)throw Error('Screen inventory mismatch');
+for(const screen of manifest){const image=fs.readFileSync(path.join(root,'screens',screen.filename+'.png'));if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==1600||image.readUInt32BE(20)!==1000)throw Error('Invalid PNG: '+screen.filename);if(image.length<15000)throw Error('Unexpectedly empty PNG: '+screen.filename);if(!fs.existsSync(path.join(root,'screens',screen.filename+'.svg')))throw Error('Missing editable SVG');}
+const report={screens:25,resolution:'1600 × 1000',editableSources:25,contrast,limits:'Static design artifacts. No claim of implemented features, behavior tests or OS DPI verification.'};
+fs.writeFileSync(path.join(root,'validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

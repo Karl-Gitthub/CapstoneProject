@@ -1,5 +1,7 @@
 # Desktop foundation — implementation and validation
 
+This page describes the earlier foundation stage. For the current role-based workspace, enrollment, account and report implementation, read [WORKSPACE-IMPLEMENTATION.md](WORKSPACE-IMPLEMENTATION.md).
+
 Source baseline: commit `0289ea4818abe94f3b93d1b591c41dd27b8b9d95`. Work is isolated on `codex/winforms-foundation`; the unrelated Deskflow application outside this checkout is unchanged.
 
 ## Changes

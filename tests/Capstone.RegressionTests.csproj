@@ -7,6 +7,7 @@
     <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Data"/><Reference Include="System.Data.DataSetExtensions"/><Reference Include="System.Xml"/><Reference Include="System.Drawing"/><Reference Include="System.Windows.Forms"/>
     <Reference Include="CapstoneProject"><HintPath>$(CapstoneAssembly)</HintPath></Reference>
     <Compile Include="RegressionTests.cs"/>
+    <Compile Include="WorkspaceTests.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

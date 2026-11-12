@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$DataDirectory)
+param([string]$DataDirectory,[string]$ApplicationPath)
 $ErrorActionPreference='Stop'
 $repoRoot=Split-Path $PSScriptRoot -Parent
 if (!$DataDirectory) { $DataDirectory=Join-Path $repoRoot 'CapstoneProject\bin\x64\Debug\Data' }
@@ -27,5 +27,9 @@ if ($needsMigration) {
 }
 # The source schema already has a primary key on studid. Preserve its relationships.
 $env:CAPSTONE_DATA_DIR=$DataDirectory
+if(!$ApplicationPath){$ApplicationPath=Join-Path $repoRoot 'CapstoneProject\bin\x64\Debug\CapstoneProject.exe'}
+if(!(Test-Path -LiteralPath $ApplicationPath)){throw 'Build the current application before initializing the workflow schema.'}
+$migration=Start-Process -FilePath $ApplicationPath -ArgumentList '--migrate-only' -WindowStyle Hidden -PassThru -Wait
+if($migration.ExitCode -ne 0){throw 'Workflow migration failed. Close all database users and rerun setup. Pre-migration backups were preserved.'}
 Write-Output "Working databases ready: $DataDirectory"
 Write-Output 'Original repository databases were not changed. Existing working copies were preserved.'

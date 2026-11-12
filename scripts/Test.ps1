@@ -10,5 +10,5 @@ $msbuild=& $vswhere -latest -products '*' -find 'MSBuild\**\Bin\MSBuild.exe' | S
 if ($LASTEXITCODE -ne 0) { throw 'Test runner build failed.' }
 $arguments=@($repoRoot)
 if($UnitOnly) { $arguments+='--unit-only' }
-& (Join-Path $repoRoot 'tests\bin\Capstone.RegressionTests.exe') @arguments
+& (Join-Path $repoRoot 'tests\bin\Capstone.RegressionTests.exe') @arguments | Tee-Object -FilePath (Join-Path $verificationDirectory 'test-results.txt')
 if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }

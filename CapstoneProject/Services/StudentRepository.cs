@@ -14,25 +14,34 @@ namespace CapstoneProject.Services
                 search.Trim(), search.Trim(), search.Trim(), program, program))
             using (var adapter = new System.Data.OleDb.OleDbDataAdapter(command))
             {
-                var table = new DataTable(); adapter.Fill(table); return table;
+                var table = new DataTable();
+                adapter.Fill(table);
+                return table;
             }
         }
         public void Create(StudentRecord s)
+        {
+            Create(s, "local");
+        }
+        public void Create(StudentRecord s, string actor)
         {
             s.Validate();
             using (var connection = Database.Open("dbStudentManagement.accdb"))
             using (var transaction = connection.BeginTransaction())
             {
                 using (var command = Database.Command(connection, transaction, "SELECT COUNT(*) FROM tbl_BSITStud_Detail WHERE studid = ?", s.Id))
-                    if (Convert.ToInt32(command.ExecuteScalar()) != 0) throw new ArgumentException("That student number already exists.");
+                    if (Convert.ToInt32(command.ExecuteScalar()) != 0)
+                        throw new ArgumentException("That student number already exists.");
                 Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_Detail (studid,studfname,studmname,studlname,studsuffix,studdatereg,studbdate,studage,studnationality,studgender,studprogram,yearlevel) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                     s.Id, s.FirstName, s.MiddleName, s.LastName, s.Suffix, s.RegistrationDate.Date, s.BirthDate.Date, s.Age, s.Nationality, s.Gender, s.Program, s.YearLevel);
                 Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_Address (studid,studaddnum,studaddstreet,studaddbrgy,studaddcity,studaddprovince,studaddzip) VALUES (?,?,?,?,?,?,?)",
-                    s.Id,s.StreetNumber,s.Street,s.Barangay,s.City,s.Province,s.Zip);
-                Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_ContactDetail (studid,studcontactnum,studcontactadd) VALUES (?,?,?)", s.Id,s.Phone,s.Email);
-                Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_SchoolBackground (studid,studprevprim_schoolname,studprev_sy,studprevsec_schoolname,studprevsec_sy) VALUES (?,?,?,?,?)", s.Id,s.PrimarySchool,s.PrimaryYear,s.SecondarySchool,s.SecondaryYear);
+                    s.Id, s.StreetNumber, s.Street, s.Barangay, s.City, s.Province, s.Zip);
+                Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_ContactDetail (studid,studcontactnum,studcontactadd) VALUES (?,?,?)", s.Id, s.Phone, s.Email);
+                Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_SchoolBackground (studid,studprevprim_schoolname,studprev_sy,studprevsec_schoolname,studprevsec_sy) VALUES (?,?,?,?,?)", s.Id, s.PrimarySchool, s.PrimaryYear, s.SecondarySchool, s.SecondaryYear);
                 Database.Execute(connection, transaction, "INSERT INTO tbl_BSITStud_Credentials (studid,studthesis,studcredgm,studcredhd,studhsdiploma,studbirthcert,studcopyofgrades,studcredtor,studcredf137,studcredf138,studcertojt) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                    s.Id,s.Thesis,s.GoodMoral,s.HonorableDismissal,s.Diploma,s.BirthCertificate,s.CopyOfGrades,s.Transcript,s.Form137,s.Form138,s.Ojt);
+                    s.Id, s.Thesis, s.GoodMoral, s.HonorableDismissal, s.Diploma, s.BirthCertificate, s.CopyOfGrades, s.Transcript, s.Form137, s.Form138, s.Ojt);
+                Database.Execute(connection, transaction, "INSERT INTO app_student_state(student_id,record_version,review_state,review_note,updated_utc) VALUES (?,0,?,?,?)", s.Id, "Pending program review", "", DateTime.UtcNow);
+                SchemaMigrator.Audit(connection, transaction, actor, "Student created", s.Id);
                 transaction.Commit();
             }
         }
