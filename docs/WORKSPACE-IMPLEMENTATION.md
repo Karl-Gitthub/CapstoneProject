@@ -12,7 +12,7 @@ The blue, white and yellow design is implemented as native Windows Forms screens
 | Registrar | Actual review queue, student search/profile/create/edit, registration approval, enrollment, grades, faculty loading, evaluation and reports |
 | Coordinator | Program-scoped student review, correction/forwarding, enrollment drafts, evaluation and teaching assignments |
 | Faculty | Assigned classes, scoped grade editing, partial-period saves and read-only computed-grade reports |
-| Administrator | First-account setup, staff access review, role/faculty mapping, account disable, password assistance and UTC audit history |
+| Administrator | Academic workspace, student records, enrollment, grades, evaluation, faculty loading and reports; first-account setup, staff access review, role/faculty mapping, account disable, password assistance and UTC audit history |
 | Student editing | Five related records saved in one transaction; optimistic version check; unsaved input retained on errors |
 | Enrollment | Offered-class selection, draft versioning, duplicate/schedule checks, registration approval required for confirmation; header/lines/course records commit together |
 | Assignment editing | Instructor/section/time edits preserve course and term, check schedule collisions, and update linked grade access atomically |

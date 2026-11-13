@@ -61,6 +61,8 @@ Prepare the following role accounts once before presenting. At login, use **Requ
 
 These are suggested usernames, not supplied accounts. The administrator's account manages access; use the registrar and coordinator accounts for the academic workflow. Do this rehearsal before the presentation to avoid spending the live demonstration creating accounts.
 
+The administrator sidebar also provides **Students**, **Enrollment**, **Grades**, **Evaluation**, **Faculty loading**, and **Reports** under **Academic records**. Sign in as `admin` (or your chosen administrator username), open **Students**, select Miguel or Alyssa, and open the profile/editor to see the completed fictional details. Scroll the sidebar to reach the administration screens. Coordinator review still uses its existing program-specific account and approval rules.
+
 ## Walkthrough
 
 1. **Review registration.** Sign in as the BSIT coordinator. Open **Pending students**, select `SAMPLE-BSIT-001`, review the profile, add a note, and choose **Approve and forward**. Explain that this account cannot approve a student outside BSIT.
@@ -103,6 +105,8 @@ All generated databases, accounts, archives, lock files, and builds remain under
 
 ## Verification
 
-The fictional-profile update was verified on 13 November 2026 with all **202 checks passing**, including ten checks for complete form data, preservation of accounts/enrollments/grades/review decisions, and rollback on a failed refresh. All four populated student tabs were rendered from the current demo, and the identity/contact layouts were inspected.
+The administrator-navigation update was verified on 13 November 2026 with all **212 checks passing**, including both-program student access, opening student profiles, all 11 administrator routes, minimum-size sidebar scrolling, and unchanged role restrictions. Close the running demo and reopen **Start Demo.cmd** to build the updated screens; retain the same administrator credentials and existing demo records.
+
+The earlier fictional-profile update passed 202 checks, including ten checks for complete form data, preservation of accounts/enrollments/grades/review decisions, and rollback on a failed refresh. All four populated student tabs were rendered from the current demo, and the identity/contact layouts were inspected.
 
 On 12 November 2026, the launch-readiness update passed 159 application checks, eight prerequisite/path checks, nine local-setup checks, 12 demo/reset checks, and four real visible-window checks: **192 total**. Coverage includes first-run completion/cancellation, existing-account preservation, automatic demo detection through ordinary/direct entry, class-switch save/discard behavior, and reset protection. Grade-entry and demo-login renders were inspected. The two existing unused-field warnings in the legacy faculty form remain; actual Windows DPI, printer hardware, and Azure deployment were not part of this verification. See [release readiness](READINESS.md) for remaining work.

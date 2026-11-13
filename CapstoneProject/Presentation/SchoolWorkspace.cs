@@ -109,8 +109,14 @@ namespace CapstoneProject.Presentation
             shell.Controls.Add(main, 1, 0);
             Controls.Add(shell);
             if (user.Role == "ADMINISTRATOR")
-            foreach (var name in new[] { "Staff accounts", "Access requests", "Password assistance", "Audit history" })
-                AddRoute(name);
+            {
+                AddNavigationGroup("ACADEMIC RECORDS");
+                foreach (var name in new[] { "Workspace", "Students", "Enrollment", "Grades", "Evaluation", "Faculty loading", "Reports" })
+                    AddRoute(name);
+                AddNavigationGroup("ADMINISTRATION");
+                foreach (var name in new[] { "Staff accounts", "Access requests", "Password assistance", "Audit history" })
+                    AddRoute(name);
+            }
             else if (user.Role == "FACULTY")
             foreach (var name in new[] { "My workspace", "My classes", "Grade entry", "Computed grades" })
                 AddRoute(name);
@@ -143,9 +149,18 @@ namespace CapstoneProject.Presentation
             button.Paint += (s, e) => { if (button.BackColor != Theme.Navy) using (var brush = new SolidBrush(Theme.Gold)) e.Graphics.FillRectangle(brush, 0, 8, 3, button.Height - 16); };
             return button;
         }
+        private void AddNavigationGroup(string text)
+        {
+            var label = Theme.Label(text, 8, true);
+            label.ForeColor = Color.FromArgb(199, 213, 229);
+            label.Margin = new Padding(8, 12, 0, 8);
+            navigation.Controls.Add(label);
+        }
         private void AddRoute(string name)
         {
             var button = NavigationButton(name);
+            // The longer admin menu needs room for its vertical scrollbar.
+            if (user.Role == "ADMINISTRATOR") button.Width = 160;
             button.Click += (s, e) => Navigate(name);
             navigation.Controls.Add(button);
             links.Add(name, button);

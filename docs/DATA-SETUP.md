@@ -47,7 +47,7 @@ Create your own first-administrator credentials in the setup dialog. Existing ac
 
 ## Validation and remaining exposure
 
-The current update passed **202 checks** in isolated source/data on 13 November 2026. Earlier targeted legacy-format probes returned the correct 49.5 average and both historical grade rows for the receiving coordinator. Sample generation and overwrite protection remain covered. The two pre-existing unused-field compiler warnings in the legacy faculty form remain. See [release readiness](READINESS.md) for coverage and remaining work.
+The current update passed **212 checks** in isolated source/data on 13 November 2026. Earlier targeted legacy-format probes returned the correct 49.5 average and both historical grade rows for the receiving coordinator. Sample generation and overwrite protection remain covered. The two pre-existing unused-field compiler warnings in the legacy faculty form remain. See [release readiness](READINESS.md) for coverage and remaining work.
 
 Run `scripts/Test.ps1` for calculation, locale, service, transfer-authorization, transactional enrollment, competing-client, actual grid-edit, and rendering checks. UI renders do not substitute for actual OS DPI, screen-reader, or printer testing. Test-generated files and seed binaries belong under ignored `artifacts`.
 

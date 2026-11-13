@@ -166,7 +166,8 @@ internal static class WorkspaceTests
         DemoSessionTests.Interface(check, registrar, repo);
         OnboardingTests.Integration(check, repo);
         Application.EnableVisualStyles();
-        foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Grades"), Tuple.Create(registrar, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry"), Tuple.Create(admin, "Staff accounts"), Tuple.Create(admin, "Access requests"), Tuple.Create(admin, "Password assistance"), Tuple.Create(admin, "Audit history") })
+        AdministratorNavigationTests.Integration(check, admin, registrar, coordinator, faculty);
+        foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Grades"), Tuple.Create(registrar, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry") })
         {
             var value = tuple;
             check("runtime page renders: " + tuple.Item1.Role + " / " + tuple.Item2, () => CaptureWorkspace(value.Item1, value.Item2, repo));
