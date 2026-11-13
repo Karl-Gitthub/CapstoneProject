@@ -17,15 +17,16 @@ No default account or password is supplied. Administrator creation retains the o
 
 ## Verification
 
-On 12 November 2026, a clean source snapshot passed:
+On 13 November 2026, a clean source snapshot passed:
 
 - 159 application checks, including actual first-run form completion/cancellation and grade-grid interactions.
 - Eight prerequisite/path checks, including missing provider discovery, read-only/locked files and long paths.
 - Nine database setup checks.
 - 12 demo/reset safety checks.
+- Ten fictional-profile checks covering complete form data, account/grade preservation and rollback on a failed refresh.
 - Four visible-window checks using Release builds, including ordinary and direct demo entry.
 
-Total: **192 passed**. A focused Release test run also exercised administrator setup and grade switching. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
+Total: **202 passed**. A focused Release test run also exercised administrator setup and grade switching. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
 
 These checks use disposable data. They do not certify every Windows configuration, printer, real OS DPI setting, screen reader, large dataset, disk failure or power-loss scenario. Human acceptance rehearsal and a clean second-computer check remain necessary before an external handoff.
 

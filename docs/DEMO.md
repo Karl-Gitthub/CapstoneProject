@@ -32,14 +32,24 @@ The default demonstration uses `artifacts/demo/presentation/data`, separate from
 
 | Record | Identifier |
 |---|---|
-| BSIT student awaiting program review | `SAMPLE-BSIT-001` |
-| BSBA student awaiting program review | `SAMPLE-BSBA-001` |
-| BSIT faculty profile | `SAMPLE-FAC-BSIT` |
-| BSBA faculty profile | `SAMPLE-FAC-BSBA` |
-| BSIT sample courses | `SAMPLE-BSIT-201`, `SAMPLE-BSIT-202` |
-| BSBA sample courses | `SAMPLE-BSBA-201`, `SAMPLE-BSBA-202` |
+| Miguel Antonio Dela Cruz, BSIT | `SAMPLE-BSIT-001` |
+| Alyssa Mae Reyes, BSBA | `SAMPLE-BSBA-001` |
+| Gabriel Luis Navarro, BSIT faculty | `SAMPLE-FAC-BSIT` |
+| Patricia Anne Mendoza, BSBA faculty | `SAMPLE-FAC-BSBA` |
+| Database Management Systems; Application Development and Emerging Technologies | `SAMPLE-BSIT-201`, `SAMPLE-BSIT-202` |
+| Financial Management; Marketing Management | `SAMPLE-BSBA-201`, `SAMPLE-BSBA-202` |
 
 Courses and student records are illustrative. No grades or enrollments are pre-approved. Creating and approving them is part of the demonstration.
+
+All names and record details are fictional. Student profiles include demographics, birth/registration dates, addresses, prior education and document statuses. Phone numbers are masked and emails use `example.invalid`. An empty suffix means no suffix applies. School/address labels and course descriptions identify demonstration data; these are not official curriculum or school records. Select a sample student with a registrar account and open **Edit student** to see the populated tabs. New student forms remain blank for entry.
+
+To update an existing demo's original sample profiles without resetting accounts or academic work, close its windows and run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Refresh-DemoProfiles.ps1
+```
+
+This creates a full backup under the session's `backups/profiles-...` folder, updates only the `SAMPLE-` student/faculty/course records, preserves account database bytes, saved grades, enrollment identifiers, review decisions and unrelated students, and restores the old files if an update fails. Refreshing profile details increments their record versions and writes a fixture audit entry. A future reset also generates these richer profiles. The main working database is not targeted by this refresh command.
 
 Prepare the following role accounts once before presenting. At login, use **Request staff access**, enter sample contact details ending in `@example.invalid`, and choose a password. Sign in as administrator, open **Access requests**, select the request, and explicitly approve its role with a verification note.
 
@@ -92,5 +102,7 @@ Close the demo, open Microsoft Access, and browse to `artifacts/demo/presentatio
 All generated databases, accounts, archives, lock files, and builds remain under ignored `artifacts`. Nothing in this workflow uploads student data or creates Azure resources.
 
 ## Verification
+
+The fictional-profile update was verified on 13 November 2026 with all **202 checks passing**, including ten checks for complete form data, preservation of accounts/enrollments/grades/review decisions, and rollback on a failed refresh. All four populated student tabs were rendered from the current demo, and the identity/contact layouts were inspected.
 
 On 12 November 2026, the launch-readiness update passed 159 application checks, eight prerequisite/path checks, nine local-setup checks, 12 demo/reset checks, and four real visible-window checks: **192 total**. Coverage includes first-run completion/cancellation, existing-account preservation, automatic demo detection through ordinary/direct entry, class-switch save/discard behavior, and reset protection. Grade-entry and demo-login renders were inspected. The two existing unused-field warnings in the legacy faculty form remain; actual Windows DPI, printer hardware, and Azure deployment were not part of this verification. See [release readiness](READINESS.md) for remaining work.

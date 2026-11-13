@@ -48,7 +48,7 @@ The suite also generates WinForms renders under `docs/screenshots` at simulated 
 
 ## Current scope
 
-See [release readiness](docs/READINESS.md) for the 192-check verification and remaining work before real school deployment.
+See [release readiness](docs/READINESS.md) for the 202-check verification and remaining work before real school deployment.
 
 - One role-aware shell, shared sidebar, consistent fields/tables and visible selection and feedback states.
 - Student search, profile, grouped create/edit forms, credential status and coordinator-to-registrar review.

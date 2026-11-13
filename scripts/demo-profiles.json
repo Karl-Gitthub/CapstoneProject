@@ -1,0 +1,38 @@
+{
+  "fictional": true,
+  "version": 2,
+  "students": [
+    {
+      "Id": "SAMPLE-BSIT-001", "FirstName": "Miguel", "MiddleName": "Antonio", "LastName": "Dela Cruz", "Suffix": "",
+      "Program": "BSIT", "YearLevel": "2", "Gender": "Male", "Nationality": "Filipino",
+      "BirthDate": "2007-02-11", "RegistrationDate": "2026-06-01",
+      "StreetNumber": "24", "Street": "Sampaguita Lane (Demo)", "Barangay": "Barangay Maligaya (Demo)", "City": "Angeles City", "Province": "Pampanga", "Zip": "2009",
+      "Phone": "09XX-XXX-1201", "Email": "miguel.delacruz@example.invalid",
+      "PrimarySchool": "Maligaya Elementary School (Demo)", "PrimaryYear": "2019",
+      "SecondarySchool": "San Isidro Senior High School (Demo)", "SecondaryYear": "2025",
+      "BirthCertificate": "Submitted", "GoodMoral": "Submitted", "HonorableDismissal": "Not Applicable", "Diploma": "Submitted",
+      "CopyOfGrades": "Submitted", "Transcript": "Not Applicable", "Form137": "Submitted", "Form138": "Submitted", "Thesis": "Not Applicable", "Ojt": "Not Applicable"
+    },
+    {
+      "Id": "SAMPLE-BSBA-001", "FirstName": "Alyssa", "MiddleName": "Mae", "LastName": "Reyes", "Suffix": "",
+      "Program": "BSBA", "YearLevel": "2", "Gender": "Female", "Nationality": "Filipino",
+      "BirthDate": "2007-04-23", "RegistrationDate": "2026-06-01",
+      "StreetNumber": "18", "Street": "Narra Street (Demo)", "Barangay": "Barangay Mabuhay (Demo)", "City": "Angeles City", "Province": "Pampanga", "Zip": "2009",
+      "Phone": "09XX-XXX-1202", "Email": "alyssa.reyes@example.invalid",
+      "PrimarySchool": "Mabuhay Elementary School (Demo)", "PrimaryYear": "2019",
+      "SecondarySchool": "Santa Clara Senior High School (Demo)", "SecondaryYear": "2025",
+      "BirthCertificate": "Submitted", "GoodMoral": "Submitted", "HonorableDismissal": "Not Applicable", "Diploma": "Submitted",
+      "CopyOfGrades": "Submitted", "Transcript": "Not Applicable", "Form137": "Submitted", "Form138": "Submitted", "Thesis": "Not Applicable", "Ojt": "Not Applicable"
+    }
+  ],
+  "faculty": [
+    { "Id": "SAMPLE-FAC-BSIT", "FirstName": "Gabriel", "MiddleName": "Luis", "LastName": "Navarro" },
+    { "Id": "SAMPLE-FAC-BSBA", "FirstName": "Patricia", "MiddleName": "Anne", "LastName": "Mendoza" }
+  ],
+  "courses": [
+    { "Program": "BSIT", "Code": "SAMPLE-BSIT-201", "Description": "Database Management Systems (Demo)", "Units": 3, "Lecture": 2, "Lab": 1, "YearLevel": "2" },
+    { "Program": "BSIT", "Code": "SAMPLE-BSIT-202", "Description": "Application Development and Emerging Technologies (Demo)", "Units": 3, "Lecture": 2, "Lab": 1, "YearLevel": "2" },
+    { "Program": "BSBA", "Code": "SAMPLE-BSBA-201", "Description": "Financial Management (Demo)", "Units": 3, "Lecture": 3, "Lab": 0, "YearLevel": "2" },
+    { "Program": "BSBA", "Code": "SAMPLE-BSBA-202", "Description": "Marketing Management (Demo)", "Units": 3, "Lecture": 3, "Lab": 0, "YearLevel": "2" }
+  ]
+}

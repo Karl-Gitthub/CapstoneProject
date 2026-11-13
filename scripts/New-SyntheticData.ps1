@@ -78,28 +78,8 @@ foreach ($file in $schemas.Keys) {
     try { foreach($sql in $schemas[$file]) { Invoke-SeedSql $connection $sql } } finally { $connection.Dispose() }
 }
 if (!$SchemaOnly) {
-    $connection=Open-SeedDatabase 'dbStudentManagement.accdb'
-    try {
-        foreach($program in @('BSIT','BSBA')) {
-            $id='SAMPLE-'+$program+'-001'
-            Invoke-SeedSql $connection 'INSERT INTO tbl_BSITStud_Detail(studid,studfname,studlname,studprogram,yearlevel,studbdate,studdatereg) VALUES (?,?,?,?,?,?,?)' @($id,'Sample',('Student '+$program),$program,'2',[DateTime]::new(2006,1,15),[DateTime]::new(2026,6,1))
-            Invoke-SeedSql $connection 'INSERT INTO tbl_BSITStud_Address(studid,studaddcity) VALUES (?,?)' @($id,'Sample City')
-            Invoke-SeedSql $connection 'INSERT INTO tbl_BSITStud_ContactDetail(studid,studcontactadd) VALUES (?,?)' @($id,('sample.'+$program.ToLower()+'@example.invalid'))
-            Invoke-SeedSql $connection 'INSERT INTO tbl_BSITStud_SchoolBackground(studid,studprevsec_schoolname) VALUES (?,?)' @($id,'Sample Secondary School')
-            Invoke-SeedSql $connection 'INSERT INTO tbl_BSITStud_Credentials(studid,studbirthcert,studcredf137) VALUES (?,?,?)' @($id,'Submitted','Not Submitted')
-        }
-    } finally { $connection.Dispose() }
-    $connection=Open-SeedDatabase 'db_GradingManagement.accdb'
-    try { foreach($program in @('BSIT','BSBA')) { Invoke-SeedSql $connection 'INSERT INTO tbl_FacultyDetail(fac_id,fac_fname,fac_lname) VALUES (?,?,?)' @(('SAMPLE-FAC-'+$program),'Sample',('Faculty '+$program)) } } finally { $connection.Dispose() }
-    $connection=Open-SeedDatabase 'dbCourseManagement.accdb'
-    try {
-        foreach($program in @('BSIT','BSBA')) {
-            $prefix=$program.ToLower()
-            foreach($number in @(201,202)) {
-                Invoke-SeedSql $connection "INSERT INTO tbl_$($program)CourseDetail($($prefix)_coursecode_id,$($prefix)_coursecode_desc,$($prefix)_credunit,$($prefix)_lecunit,$($prefix)_labunit,$($prefix)_courseyearlvl) VALUES (?,?,'3','3','0','2')" @(('SAMPLE-'+$program+'-'+$number),('Sample course '+$number+' (demonstration only)'))
-            }
-        }
-    } finally { $connection.Dispose() }
+    . (Join-Path $PSScriptRoot 'Demo-Profiles.ps1')
+    Set-FictionalProfiles -Directory $OutputDirectory
     $previousDataDirectory=$env:CAPSTONE_DATA_DIR
     try {
         $env:CAPSTONE_DATA_DIR=$OutputDirectory
@@ -109,6 +89,6 @@ if (!$SchemaOnly) {
     $connection=Open-SeedDatabase 'dbStudentManagement.accdb'
     try { foreach($program in @('BSIT','BSBA')) { Invoke-SeedSql $connection "INSERT INTO app_student_state(student_id,record_version,review_state,review_note,updated_utc) VALUES (?,0,'Pending program review','Synthetic demonstration record',?)" @(('SAMPLE-'+$program+'-001'),[DateTime]::UtcNow) } } finally { $connection.Dispose() }
 }
-[ordered]@{ kind='synthetic-capstone-seed'; version=1; schemaOnly=[bool]$SchemaOnly; createdUtc=[DateTime]::UtcNow.ToString('o'); accounts=0; students=$(if($SchemaOnly){0}else{2}); databases=@($schemas.Keys); note='Fresh generated data. No default password. Not an approved school curriculum.' } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $OutputDirectory 'synthetic-seed.json') -Encoding UTF8
+[ordered]@{ kind='synthetic-capstone-seed'; version=1; profilesVersion=$(if($SchemaOnly){0}else{2}); schemaOnly=[bool]$SchemaOnly; createdUtc=[DateTime]::UtcNow.ToString('o'); accounts=0; students=$(if($SchemaOnly){0}else{2}); databases=@($schemas.Keys); note='Fictional demonstration profiles. Masked phone numbers; example.invalid emails. No default password. Not an approved school curriculum.' } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $OutputDirectory 'synthetic-seed.json') -Encoding UTF8
 Write-Output "Fresh synthetic databases prepared: $OutputDirectory"
 Write-Output 'No existing databases or credentials were changed. Provision the first administrator separately for a demonstration.'
