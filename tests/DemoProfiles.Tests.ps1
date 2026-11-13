@@ -43,16 +43,23 @@ try{
     $request=$accounts.Requests($admin).Rows[0]
     $accounts.Review($admin,[int]$request['request_id'],$true,'BSIT PROGRAM COORDINATOR','','Synthetic identity verified')
     $coordinator=New-Object CapstoneProject.Services.SchoolService($auth.SignIn('profiles.coordinator',$password))
-    $school=New-Object CapstoneProject.Services.SchoolService($admin)
+    $accounts.Request('profiles.registrar','Disposable Registrar','registrar@example.invalid','Records','Fictional fixture test',$password)
+    $request=$accounts.Requests($admin).Rows[0]
+    $accounts.Review($admin,[int]$request['request_id'],$true,'REGISTRAR','','Synthetic identity verified')
+    $accounts.Request('profiles.faculty','Disposable Faculty','faculty@example.invalid','BSIT','Fictional fixture test',$password)
+    $request=$accounts.Requests($admin).Rows[0]
+    $accounts.Review($admin,[int]$request['request_id'],$true,'FACULTY','SAMPLE-FAC-BSIT','Synthetic identity verified')
+    $school=New-Object CapstoneProject.Services.SchoolService($auth.SignIn('profiles.registrar',$password))
+    $faculty=New-Object CapstoneProject.Services.SchoolService($auth.SignIn('profiles.faculty',$password))
     $state=$coordinator.StudentState('SAMPLE-BSIT-001').Rows[0]
     $coordinator.ReviewStudent('SAMPLE-BSIT-001',[int]$state['record_version'],$true,'Synthetic review')
     $state=$school.StudentState('SAMPLE-BSIT-001').Rows[0]
     $school.ReviewStudent('SAMPLE-BSIT-001',[int]$state['record_version'],$true,'Synthetic approval')
-    $school.AddOffering('BSIT','SAMPLE-BSIT-201','2026-2027','First semester','2A','SAMPLE-FAC-BSIT','M,W','09:00','10:30',0,0)
+    $coordinator.AddOffering('BSIT','SAMPLE-BSIT-201','2026-2027','First semester','2A','SAMPLE-FAC-BSIT','M,W','09:00','10:30',0,0)
     $offering=[int]$school.Offerings('BSIT','2026-2027','First semester').Rows[0]['offering_id']
     $school.SaveEnrollment('SAMPLE-BSIT-001','2026-2027','First semester',-1,[int[]]@($offering),$true)
-    $grades=$school.Grades('SAMPLE-BSIT-001','','','')
-    $grades.Rows[0]['prelim']='85.5';$grades.Rows[0]['midterm']='86';$grades.Rows[0]['final']='88';$school.SaveGrades($grades)
+    $grades=$faculty.Grades('SAMPLE-BSIT-001','','','')
+    $grades.Rows[0]['prelim']='85.5';$grades.Rows[0]['midterm']='86';$grades.Rows[0]['final']='88';$faculty.SaveGrades($grades)
     $original=$school.Grades('SAMPLE-BSIT-001','','','').Rows[0]
     $extra=New-Object CapstoneProject.Services.StudentRecord
     $extra.Id='EXTRA-DEMO-001';$extra.FirstName='Preserve';$extra.LastName='Unrelated';$extra.Program='BSIT';$extra.BirthDate=[DateTime]::new(2006,1,1);$extra.RegistrationDate=[DateTime]::Today

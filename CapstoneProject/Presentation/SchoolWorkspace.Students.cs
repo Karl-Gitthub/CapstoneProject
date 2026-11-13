@@ -106,7 +106,7 @@ namespace CapstoneProject.Presentation
                 actions.Controls.Add(edit);
             }
             var enroll = Theme.Button("Open enrollment");
-            enroll.Click += (s, e) => Navigate("Enrollment");
+            enroll.Click += (s, e) => Navigate(AccessPolicy.Coordinator(user) ? "Enrollment drafts" : "Enrollment");
             actions.Controls.Add(enroll);
             page.Controls.Add(actions, 0, 0);
             var tabs = new TabControl { Dock = DockStyle.Fill };
@@ -123,6 +123,8 @@ namespace CapstoneProject.Presentation
             var academic = Theme.Grid("Student grades");
             grades.Controls.Add(academic);
             var reviewPanel = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Top, WrapContents = true, Margin = new Padding(0, 20, 0, 0) };
+            // Ordinary student profiles are for viewing. Decisions start in the review queue.
+            reviewPanel.Visible = reviewing;
             var note = Input("Review note", 440);
             note.MaxLength = 1000;
             var stateLabel = Theme.Label("");

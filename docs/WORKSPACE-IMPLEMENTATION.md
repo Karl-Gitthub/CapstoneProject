@@ -9,10 +9,10 @@ The blue, white and yellow design is implemented as native Windows Forms screens
 | Login | Parameterized credential lookup, role from storage, legacy-password upgrade, temporary-password gate |
 | Staff sign-up | Request details and password tabs; hash stored pending administrator approval; requesting a department never grants a privileged role |
 | Password assistance | Local request queue; administrator records identity verification and supplies a temporary password; no email-delivery claim |
-| Registrar | Actual review queue, student search/profile/create/edit, registration approval, enrollment, grades, faculty loading, evaluation and reports |
+| Registrar | Review queue and registration approvals, student search/profile/create/edit, enrollment confirmation, evaluation and reports; no grade entry or faculty loading |
 | Coordinator | Program-scoped student review, correction/forwarding, enrollment drafts, evaluation and teaching assignments |
 | Faculty | Assigned classes, scoped grade editing, partial-period saves and read-only computed-grade reports |
-| Administrator | Academic workspace, student records, enrollment, grades, evaluation, faculty loading and reports; first-account setup, staff access review, role/faculty mapping, account disable, password assistance and UTC audit history |
+| Administrator | First-account setup, staff access review, role/faculty mapping, account disable, password assistance and UTC audit history; no academic access |
 | Student editing | Five related records saved in one transaction; optimistic version check; unsaved input retained on errors |
 | Enrollment | Offered-class selection, draft versioning, duplicate/schedule checks, registration approval required for confirmation; header/lines/course records commit together |
 | Assignment editing | Instructor/section/time edits preserve course and term, check schedule collisions, and update linked grade access atomically |
@@ -21,6 +21,8 @@ The blue, white and yellow design is implemented as native Windows Forms screens
 | Reports | Saved grade/roster data, paginated print preview, print dialog and escaped CSV export; internal-copy labels |
 
 ## Structure
+
+The current permissions and demonstration flow are documented in [role access](ROLE-ACCESS.md). Coordinator student profiles are read-only outside their review queue, and only assigned faculty can save grades.
 
 `Presentation/Theme` owns colors and shared controls. `SchoolWorkspace` manages navigation, async loading, stale-result suppression, save feedback and unsaved-change handling. Its Students, Academic, Accounts and Reports partials keep each workflow separate. `StudentEditor`, `FormDialog` and `ReportViewer` handle their own modal lifecycle and disposal.
 
@@ -45,7 +47,7 @@ On 12 November 2026, the x64 build and **126 regression/render checks passed** w
 
 Run `scripts/Test.ps1`. The suite uses compiled production services and disposable copies of all required databases. It covers prior regressions plus role/program/class isolation, student edits, review transitions, schedule conflicts, draft/enrollment concurrency, late enrollment rollback, decimal/partial grades, whole-batch grade rollback, instructor reassignment, access approval, password recovery review, forced password changes, account revocation and audit writes.
 
-The suite renders 14 actual workspace routes plus the student editor, staff access request, password change, assignment editor and report viewer. It asserts the requested route loaded, checks assignment selectors retain their actual saved values, and checks the minimum workspace size. Images are in `docs/screenshots/runtime`. All shown records are synthetic fixture data. Existing foundation renders also cover simulated 100–200% scaling; actual OS DPI changes and physical printer output have not been tested.
+The current role-access tests exercise all 19 approved navigation entries across the four role types under a real UI message loop, check prohibited routes and direct service operations, inspect student-profile editing access and minimum-size navigation, and check read-only computed grades. Separate captures render ten workspace routes plus the student editor, staff access request, password change, assignment editor and report viewer. Images are in `docs/screenshots/runtime`. All shown records are synthetic fixture data. Existing foundation renders also cover simulated 100–200% scaling; actual OS DPI changes and physical printer output have not been tested.
 
 ## Operational limits
 

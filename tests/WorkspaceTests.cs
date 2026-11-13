@@ -75,16 +75,16 @@ internal static class WorkspaceTests
             Database.Execute(db, null, "INSERT INTO tbl_BSITCourseDetail(bsit_coursecode_id,bsit_coursecode_desc,bsit_credunit,bsit_courseyearlvl) VALUES (?,?,?,?)", "IT201", "Information management", 3, "2");
             Database.Execute(db, null, "INSERT INTO tbl_BSITCourseDetail(bsit_coursecode_id,bsit_coursecode_desc,bsit_credunit,bsit_courseyearlvl) VALUES (?,?,?,?)", "IT202", "Application development", 3, "2");
         }
-        school.AddFaculty("FAC-WORK", "Jordan", "", "Lee");
-        school.AddFaculty("FAC-OTHER", "Alex", "", "Rivera");
+        program.AddFaculty("FAC-WORK", "Jordan", "", "Lee");
+        program.AddFaculty("FAC-OTHER", "Alex", "", "Rivera");
         var faculty = Account("fixture.faculty", "FACULTY", "FAC-WORK");
         var otherFaculty = Account("fixture.other", "FACULTY", "FAC-OTHER");
         var instructor = new SchoolService(faculty);
         check("coordinator creates a program-scoped teaching assignment", () => program.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2A", "FAC-WORK", "M,W", "09:00", "10:30"));
         check("faculty schedule conflicts are rejected", () => Throws<ArgumentException>(() => program.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2B", "FAC-WORK", "W", "09:30", "11:00")));
         check("cross-program teaching assignments are denied", () => Throws<UnauthorizedAccessException>(() => otherProgram.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2A", "FAC-WORK", "F", "09:00", "10:30")));
-        school.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2A", "FAC-WORK", "M,W", "10:30", "12:00");
-        school.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2B", "FAC-OTHER", "M,W", "09:30", "11:00");
+        program.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2A", "FAC-WORK", "M,W", "10:30", "12:00");
+        program.AddOffering("BSIT", "IT202", "2026-2027", "First semester", "2B", "FAC-OTHER", "M,W", "09:30", "11:00");
         var offerings = school.Offerings("BSIT", "2026-2027", "First semester");
         int first = offerings.AsEnumerable().Where(r => Convert.ToString(r["course_code"]) == "IT201").Select(r => Convert.ToInt32(r["offering_id"])).Single();
         int second = offerings.AsEnumerable().Where(r => Convert.ToString(r["course_code"]) == "IT202" && Convert.ToString(r["section_name"]) == "2A").Select(r => Convert.ToInt32(r["offering_id"])).Single();
@@ -138,15 +138,15 @@ internal static class WorkspaceTests
         check("workflow changes produce audit records", () => { if (new SchoolService(admin).Audit().Rows.Count < 12) throw new Exception("Missing audit records"); });
         check("first-administrator setup cannot run twice", () => Throws<InvalidOperationException>(() => AccountAdministration.Bootstrap("another.admin", "Other", Password)));
         var facultySnapshot = school.Faculty().AsEnumerable().Single(r => Convert.ToString(r["fac_id"]) == "FAC-WORK");
-        check("faculty profile edits preserve identifiers", () => { school.UpdateFaculty(facultySnapshot, "Jordan", "A", "Lee"); Equal("A", Convert.ToString(school.Faculty().AsEnumerable().Single(r => Convert.ToString(r["fac_id"]) == "FAC-WORK")["fac_mname"])); });
-        check("stale faculty profile edits are rejected", () => Throws<DBConcurrencyException>(() => school.UpdateFaculty(facultySnapshot, "Jordan", "B", "Lee")));
-        school.AddFaculty("FAC-TRANSFER", "Taylor", "", "Lim");
+        check("faculty profile edits preserve identifiers", () => { program.UpdateFaculty(facultySnapshot, "Jordan", "A", "Lee"); Equal("A", Convert.ToString(school.Faculty().AsEnumerable().Single(r => Convert.ToString(r["fac_id"]) == "FAC-WORK")["fac_mname"])); });
+        check("stale faculty profile edits are rejected", () => Throws<DBConcurrencyException>(() => program.UpdateFaculty(facultySnapshot, "Jordan", "B", "Lee")));
+        program.AddFaculty("FAC-TRANSFER", "Taylor", "", "Lim");
         var transferred = Account("fixture.transfer", "FACULTY", "FAC-TRANSFER");
         var beforeTransfer = instructor.Grades(student.Id);
         var assignment = school.Offerings("BSIT").AsEnumerable().Single(r => Convert.ToInt32(r["offering_id"]) == first);
-        check("assignment edits reject enrolled-student schedule conflicts", () => Throws<ArgumentException>(() => school.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2C", "FAC-TRANSFER", "M,W", "11:00", "12:30", first, 0)));
-        check("assignment transfer changes linked grade access atomically", () => { school.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2A", "FAC-TRANSFER", "M,W", "09:00", "10:30", first, 0); Equal(1, new SchoolService(transferred).Grades(student.Id).Rows.Count); Equal(1, instructor.Grades(student.Id).Rows.Count); });
-        check("stale teaching assignment updates are rejected", () => Throws<DBConcurrencyException>(() => school.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2A", "FAC-TRANSFER", "M,W", "09:00", "10:30", first, 0)));
+        check("assignment edits reject enrolled-student schedule conflicts", () => Throws<ArgumentException>(() => program.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2C", "FAC-TRANSFER", "M,W", "11:00", "12:30", first, 0)));
+        check("assignment transfer changes linked grade access atomically", () => { program.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2A", "FAC-TRANSFER", "M,W", "09:00", "10:30", first, 0); Equal(1, new SchoolService(transferred).Grades(student.Id).Rows.Count); Equal(1, instructor.Grades(student.Id).Rows.Count); });
+        check("stale teaching assignment updates are rejected", () => Throws<DBConcurrencyException>(() => program.AddOffering("BSIT", "IT201", "2026-2027", "First semester", "2A", "FAC-TRANSFER", "M,W", "09:00", "10:30", first, 0)));
         check("old instructor cannot save a transferred enrollment", () => { var row = beforeTransfer.AsEnumerable().Single(r => Convert.ToString(r["course_code"]) == "IT201"); row["final"] = "99"; Throws<UnauthorizedAccessException>(() => instructor.SaveGrades(beforeTransfer)); });
         var rollbackStudent = new StudentRecord { Id = "WORK-ROLLBACK", FirstName = "Rollback", LastName = "Student", Program = "BSIT", YearLevel = "2", BirthDate = new DateTime(2006, 1, 1), RegistrationDate = DateTime.Today };
         school.SaveStudent(rollbackStudent, true);
@@ -166,8 +166,8 @@ internal static class WorkspaceTests
         DemoSessionTests.Interface(check, registrar, repo);
         OnboardingTests.Integration(check, repo);
         Application.EnableVisualStyles();
-        AdministratorNavigationTests.Integration(check, admin, registrar, coordinator, faculty);
-        foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Grades"), Tuple.Create(registrar, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry") })
+        RoleAccessTests.Integration(check, admin, registrar, coordinator, faculty);
+        foreach (var tuple in new[] { Tuple.Create(registrar, "Workspace"), Tuple.Create(registrar, "Students"), Tuple.Create(registrar, "Enrollment"), Tuple.Create(registrar, "Registration approvals"), Tuple.Create(coordinator, "Faculty loading"), Tuple.Create(registrar, "Evaluation"), Tuple.Create(registrar, "Reports"), Tuple.Create(coordinator, "Pending students"), Tuple.Create(faculty, "My classes"), Tuple.Create(faculty, "Grade entry") })
         {
             var value = tuple;
             check("runtime page renders: " + tuple.Item1.Role + " / " + tuple.Item2, () => CaptureWorkspace(value.Item1, value.Item2, repo));

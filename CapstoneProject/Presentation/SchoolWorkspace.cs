@@ -110,22 +110,19 @@ namespace CapstoneProject.Presentation
             Controls.Add(shell);
             if (user.Role == "ADMINISTRATOR")
             {
-                AddNavigationGroup("ACADEMIC RECORDS");
-                foreach (var name in new[] { "Workspace", "Students", "Enrollment", "Grades", "Evaluation", "Faculty loading", "Reports" })
-                    AddRoute(name);
-                AddNavigationGroup("ADMINISTRATION");
                 foreach (var name in new[] { "Staff accounts", "Access requests", "Password assistance", "Audit history" })
                     AddRoute(name);
             }
             else if (user.Role == "FACULTY")
-            foreach (var name in new[] { "My workspace", "My classes", "Grade entry", "Computed grades" })
+            foreach (var name in new[] { "My classes", "Grade entry", "Computed grades" })
                 AddRoute(name);
             else if (AccessPolicy.Coordinator(user))
-            foreach (var name in new[] { "My workspace", "Pending students", "Students", "Enrollment", "Evaluation", "Faculty loading", "Reports" })
+            foreach (var name in new[] { "My workspace", "Pending students", "Students", "Enrollment drafts", "Faculty loading", "Evaluation" })
                 AddRoute(name);
-            else
-            foreach (var name in new[] { "Workspace", "Students", "Enrollment", "Grades", "Evaluation", "Faculty loading", "Reports" })
+            else if (AccessPolicy.Registrar(user))
+            foreach (var name in new[] { "Workspace", "Students", "Registration approvals", "Enrollment", "Evaluation", "Reports" })
                 AddRoute(name);
+            else throw new UnauthorizedAccessException("This account does not have a supported staff role.");
             Shown += (s, e) => { if (string.IsNullOrEmpty(route)) Navigate(links.Keys.First()); };
         }
         private string DisplayRole
@@ -149,18 +146,11 @@ namespace CapstoneProject.Presentation
             button.Paint += (s, e) => { if (button.BackColor != Theme.Navy) using (var brush = new SolidBrush(Theme.Gold)) e.Graphics.FillRectangle(brush, 0, 8, 3, button.Height - 16); };
             return button;
         }
-        private void AddNavigationGroup(string text)
-        {
-            var label = Theme.Label(text, 8, true);
-            label.ForeColor = Color.FromArgb(199, 213, 229);
-            label.Margin = new Padding(8, 12, 0, 8);
-            navigation.Controls.Add(label);
-        }
         private void AddRoute(string name)
         {
             var button = NavigationButton(name);
-            // The longer admin menu needs room for its vertical scrollbar.
-            if (user.Role == "ADMINISTRATOR") button.Width = 160;
+            // Leave room for a scrollbar at the minimum window size.
+            button.Width = 160;
             button.Click += (s, e) => Navigate(name);
             navigation.Controls.Add(button);
             links.Add(name, button);
@@ -203,9 +193,9 @@ namespace CapstoneProject.Presentation
             {
                 if (name == "Students")
                     await StudentList();
-                else if (name == "Pending students")
+                else if (name == "Pending students" || name == "Registration approvals")
                     await ReviewQueuePage();
-                else if (name == "Enrollment")
+                else if (name == "Enrollment" || name == "Enrollment drafts")
                     await EnrollmentPage();
                 else if (name == "Faculty loading")
                     await FacultyPage();

@@ -61,14 +61,16 @@ Prepare the following role accounts once before presenting. At login, use **Requ
 
 These are suggested usernames, not supplied accounts. The administrator's account manages access; use the registrar and coordinator accounts for the academic workflow. Do this rehearsal before the presentation to avoid spending the live demonstration creating accounts.
 
-The administrator sidebar also provides **Students**, **Enrollment**, **Grades**, **Evaluation**, **Faculty loading**, and **Reports** under **Academic records**. Sign in as `admin` (or your chosen administrator username), open **Students**, select Miguel or Alyssa, and open the profile/editor to see the completed fictional details. Scroll the sidebar to reach the administration screens. Coordinator review still uses its existing program-specific account and approval rules.
+Administrator access is limited to staff accounts, access requests, password assistance and audit history. Sign in as registrar to open **Students** and inspect Miguel's or Alyssa's completed fictional profile. Coordinators review registrations from **Pending students** and prepare **Enrollment drafts**; the registrar uses **Registration approvals** and confirms enrollment. Only assigned faculty enter grades. See [role access and workflow](ROLE-ACCESS.md).
+
+The locally provisioned presentation accounts and generated passwords are listed in ignored `artifacts/demo/presentation/ROLE-ACCOUNTS.md`. They do not apply to the main database or fresh downloads, and a demo reset removes them from the active demo.
 
 ## Walkthrough
 
 1. **Review registration.** Sign in as the BSIT coordinator. Open **Pending students**, select `SAMPLE-BSIT-001`, review the profile, add a note, and choose **Approve and forward**. Explain that this account cannot approve a student outside BSIT.
-2. **Approve registration.** Sign in as the registrar. Open the same student and complete **Approve registration**. Show the updated review status.
+2. **Approve registration.** Sign in as the registrar. Open **Registration approvals**, review the same student, and complete **Approve registration**. Show the updated review status.
 3. **Assign classes.** As coordinator, open **Faculty loading** and create two BSIT offerings for academic year `2026-2027`, **First semester**, section `2A`, and faculty `SAMPLE-FAC-BSIT`. Use day codes `M,W`: course 201 at `09:00–10:30`, course 202 at `10:30–12:00`. A conflicting instructor or section schedule should be rejected.
-4. **Enroll the student.** As registrar, open **Enrollment**, enter the student and matching year/semester, load the classes, select both offerings, save a draft, then confirm. Show that enrollment requires approved registration and rejects overlapping classes.
+4. **Enroll the student.** As coordinator, open **Enrollment drafts**, enter the student and matching year/semester, load the classes, select both offerings and save a draft. Sign in as registrar, open **Enrollment**, load that student and term, review the selected classes, then confirm. Show that enrollment requires approved registration and rejects overlapping classes.
 5. **Enter grades.** As faculty, open **My classes**, choose the appropriate class, then **Grade entry**. Enter only prelim and save to show an incomplete average. Then enter prelim `95.5`, midterm `96`, and final `95`. Use your Windows decimal separator when entering values. Save: the average is approximately `95.50`, with converted grade `1.25`.
 6. **Show reporting.** As registrar, open **Evaluation** for the student, then **Reports**. Select the student, year, and semester, load saved records, and preview or export a copy of grades. Reports remain internal copies.
 7. **Show traceability.** As administrator, open **Audit history** and show the registration, enrollment, grade, and account actions created during the demonstration.
@@ -105,7 +107,9 @@ All generated databases, accounts, archives, lock files, and builds remain under
 
 ## Verification
 
-The administrator-navigation update was verified on 13 November 2026 with all **212 checks passing**, including both-program student access, opening student profiles, all 11 administrator routes, minimum-size sidebar scrolling, and unchanged role restrictions. Close the running demo and reopen **Start Demo.cmd** to build the updated screens; retain the same administrator credentials and existing demo records.
+The simpler role separation passed 197 application checks and 43 script checks across separate successful runs on 13 November 2026. All six locally provisioned demo accounts authenticated. See [release readiness](READINESS.md) for the setup-process stall and successful fresh rerun; this was not one uninterrupted suite run.
+
+The earlier administrator-navigation update passed 212 checks. That broad academic menu has been superseded by the simpler role separation documented in [role access](ROLE-ACCESS.md). Close the running demo and reopen **Start Demo.cmd** to build the updated screens; existing credentials and records are retained.
 
 The earlier fictional-profile update passed 202 checks, including ten checks for complete form data, preservation of accounts/enrollments/grades/review decisions, and rollback on a failed refresh. All four populated student tabs were rendered from the current demo, and the identity/contact layouts were inspected.
 

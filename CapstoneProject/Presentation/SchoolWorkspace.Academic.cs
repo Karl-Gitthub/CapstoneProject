@@ -78,6 +78,7 @@ namespace CapstoneProject.Presentation
         }
         private async Task GradesPage(bool readOnly)
         {
+            AccessPolicy.Require(user.Role == "FACULTY");
             var page = Page(readOnly ? "Read-only saved class grades. Make corrections through Grade entry." : "Edit period grades. Blank entries remain incomplete; averages are calculated from all three periods.", Auto(), Auto(), Fill(), Auto());
             var bar = Bar();
             var classes = new ComboBox { Name = "Class selector", AccessibleName = "Class", DropDownStyle = ComboBoxStyle.DropDownList, Width = 650, Margin = new Padding(0, 0, 12, 12) };
@@ -352,7 +353,7 @@ namespace CapstoneProject.Presentation
             var editOffering = Theme.Button("Edit assignment");
             actions.Controls.Add(editOffering);
             editOffering.Click += async (s, e) => { var row = Selected(offers); if (row == null) { NeedSelection(); return; } string scope = Value(row, "program_code"); await LoadData(() => new { Courses = service.Catalog(scope), Faculty = service.Faculty() }, data => { using (var dialog = FormDialog.Offering(service, scope, data.Courses, data.Faculty, AcademicYear, row)) if (dialog.ShowDialog(this) == DialogResult.OK) { _ = reload(); } }); };
-            if (AccessPolicy.Registrar(user))
+            if (AccessPolicy.Coordinator(user))
             {
                 var editFaculty = Theme.Button("Edit faculty profile");
                 actions.Controls.Add(editFaculty);

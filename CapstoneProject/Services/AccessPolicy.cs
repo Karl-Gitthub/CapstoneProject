@@ -11,7 +11,7 @@ namespace CapstoneProject.Services
         }
         public static bool Registrar(UserSession user)
         {
-            return user.Role == "REGISTRAR" || user.Role == "ADMINISTRATOR";
+            return user.Role == "REGISTRAR";
         }
         public static bool Coordinator(UserSession user)
         {

@@ -98,10 +98,10 @@ internal static class ApprovedBatchTests
         {
             string id = "CONSISTENCY-DRAFT", year = "2030-2031";
             ApprovedStudent(school, program, id);
-            school.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-WORK", "Tu", "08:00", "09:00");
+            program.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-WORK", "Tu", "08:00", "09:00");
             int offering = Convert.ToInt32(school.Offerings("BSIT", year).Rows[0]["offering_id"]);
             school.SaveEnrollment(id, year, "First semester", -1, new[] { offering }, false);
-            school.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-TRANSFER", "Tu", "08:00", "09:00", offering, 0);
+            program.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-TRANSFER", "Tu", "08:00", "09:00", offering, 0);
             school.SaveEnrollment(id, year, "First semester", 0, new[] { offering }, true);
             Equal("FAC-TRANSFER", Convert.ToString(school.Grades(id).Rows[0]["fac_id"]));
         });
@@ -135,8 +135,8 @@ internal static class ApprovedBatchTests
     {
         string id = "CONSISTENCY-RACE-" + index, year = (2032 + index) + "-" + (2033 + index);
         ApprovedStudent(school, program, id);
-        school.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-WORK", "Tu", "08:00", "09:00");
-        school.AddOffering("BSIT", "IT202", year, "First semester", "2B", "FAC-OTHER", "Tu", "09:00", "10:00");
+        program.AddOffering("BSIT", "IT201", year, "First semester", "2A", "FAC-WORK", "Tu", "08:00", "09:00");
+        program.AddOffering("BSIT", "IT202", year, "First semester", "2B", "FAC-OTHER", "Tu", "09:00", "10:00");
         var offerings = school.Offerings("BSIT", year);
         int first = Convert.ToInt32(offerings.AsEnumerable().Single(r => Convert.ToString(r["course_code"]) == "IT201")["offering_id"]);
         int second = Convert.ToInt32(offerings.AsEnumerable().Single(r => Convert.ToString(r["course_code"]) == "IT202")["offering_id"]);

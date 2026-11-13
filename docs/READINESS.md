@@ -17,16 +17,18 @@ No default account or password is supplied. Administrator creation retains the o
 
 ## Verification
 
-On 13 November 2026, a clean source snapshot passed:
+On 13 November 2026, an isolated source snapshot was verified with these passing checks:
 
-- 169 application checks, including actual first-run form completion/cancellation, grade-grid interactions, all administrator navigation pages, both-program student access, profile access, minimum-size sidebar scrolling and unchanged role restrictions. Administrator navigation runs under a real UI message loop; these functional checks replace four earlier administrator bitmap-only checks.
+- 197 application checks, including first-run form completion/cancellation, grade-grid interactions, all 19 approved role navigation entries, prohibited routes, direct service denials, profile access and minimum-size navigation. Administrator has no academic access; only faculty save grades; only coordinators maintain teaching assignments.
 - Eight prerequisite/path checks, including missing provider discovery, read-only/locked files and long paths.
 - Nine database setup checks.
 - 12 demo/reset safety checks.
 - Ten fictional-profile checks covering complete form data, account/grade preservation and rollback on a failed refresh.
 - Four visible-window checks using Release builds, including ordinary and direct demo entry.
 
-Total: **212 passed**. A focused Release test run also passed all 14 administrator navigation checks. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
+Total: **240 passed across the application suite and script checks**. Six explicitly provisioned local demo accounts also authenticated successfully; their generated credentials remain outside Git. See [role access](ROLE-ACCESS.md) for the workflow. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
+
+The first script run stalled in a native ACE/OLE migration process after schema writes; only that verified test child was stopped. All nine setup checks subsequently passed in a fresh independent run without intervention. The sample-profile fixture was updated to use separate registrar, coordinator and faculty accounts, and all ten profile checks passed on rerun. All four visible-window checks then passed. These were separate successful verification runs, not one uninterrupted full-suite pass; the native migration stall remains an observation for release rehearsal.
 
 These checks use disposable data. They do not certify every Windows configuration, printer, real OS DPI setting, screen reader, large dataset, disk failure or power-loss scenario. Human acceptance rehearsal and a clean second-computer check remain necessary before an external handoff.
 

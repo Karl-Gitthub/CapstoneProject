@@ -83,6 +83,7 @@ namespace CapstoneProject.Services
         public DataTable Catalog(string program)
         {
             Current();
+            AccessPolicy.Require(AccessPolicy.Registrar(user) || AccessPolicy.Coordinator(user));
             AccessPolicy.Require(program == "BSIT" || program == "BSBA");
             if (AccessPolicy.Coordinator(user))
                 AccessPolicy.Require(AccessPolicy.Program(user) == program);
@@ -98,7 +99,7 @@ namespace CapstoneProject.Services
         public void AddFaculty(string id, string first, string middle, string last)
         {
             Current();
-            AccessPolicy.Require(AccessPolicy.Registrar(user) || AccessPolicy.Coordinator(user));
+            AccessPolicy.Require(AccessPolicy.Coordinator(user));
             if (new[] { id, first, last }.Any(string.IsNullOrWhiteSpace) || new[] { id, first, middle, last }.Any(s => (s ?? "").Length > 255))
                 throw new ArgumentException("Enter a faculty identifier, first name and last name (maximum 255 characters each).");
             using (var db = Database.Open(SchemaMigrator.Academic))
@@ -114,7 +115,7 @@ namespace CapstoneProject.Services
         public void UpdateFaculty(DataRow original, string first, string middle, string last)
         {
             Current();
-            AccessPolicy.Require(AccessPolicy.Registrar(user));
+            AccessPolicy.Require(AccessPolicy.Coordinator(user));
             if (string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last) || new[] { first, middle, last }.Any(s => (s ?? "").Length > 255))
                 throw new ArgumentException("Enter a first and last name of up to 255 characters.");
             var values = new List<object> { first.Trim(), middle.Trim(), last.Trim(), original["fac_id"] };
@@ -138,6 +139,7 @@ namespace CapstoneProject.Services
         public DataTable Offerings(string program = "", string year = "", string semester = "")
         {
             Current();
+            AccessPolicy.Require(AccessPolicy.Registrar(user) || AccessPolicy.Coordinator(user) || user.Role == "FACULTY");
             string scope = AccessPolicy.Program(user);
             if (scope != "")
                 program = scope;
@@ -190,7 +192,7 @@ namespace CapstoneProject.Services
         public void AddOffering(string program, string course, string year, string semester, string section, string faculty, string days, string start, string end, int offeringId = 0, int expectedVersion = 0)
         {
             Current();
-            AccessPolicy.Require(AccessPolicy.Registrar(user) || AccessPolicy.Coordinator(user));
+            AccessPolicy.Require(AccessPolicy.Coordinator(user));
             AccessPolicy.Student(user, program);
             Term(year, semester);
             days = Days(days);
@@ -409,7 +411,7 @@ namespace CapstoneProject.Services
         public void SaveGrades(DataTable edited)
         {
             Current();
-            AccessPolicy.Require(user.Role == "FACULTY" || AccessPolicy.Registrar(user));
+            AccessPolicy.Require(user.Role == "FACULTY" && !string.IsNullOrWhiteSpace(user.FacultyId));
             var authorized = Grades().AsEnumerable().ToDictionary(r => Convert.ToInt32(r["course_id"]));
             var changed = edited.AsEnumerable().Where(r => r.RowState == DataRowState.Modified).ToArray();
             if (changed.Length == 0)
@@ -430,7 +432,7 @@ namespace CapstoneProject.Services
                     GradeCalculator.Validate(value);
                 }
             }
-            GradeBatch.Save(changed, user.Username, user.Role == "FACULTY" ? user.FacultyId : null);
+            GradeBatch.Save(changed, user.Username, user.FacultyId);
         }
         public DataTable Evaluation(string studentId)
         {
