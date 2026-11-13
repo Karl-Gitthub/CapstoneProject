@@ -67,7 +67,7 @@ namespace CapstoneProject.Presentation
                         return Project(list, "stud_id", "stud_lname", "stud_fname", "stud_program", "yearlevel");
                     }
                     return Project(rows, "stud_id", "stud_lname", "stud_fname", "course_code", "school_year", "sem", "average", "convert_average");
-                }, data => { Bind(grid, data); reportName = selection; reportContext = (id == "" ? "Program records" : id) + " · " + (selection == "Academic history" ? "Complete recorded history" : academicYear + " · " + term); if (data.Rows.Count == 0) feedback.Text = "No saved records match this report context."; });
+                }, data => { Bind(grid, data); ReportViewer.SizeReportColumns(grid); reportName = selection; reportContext = (id == "" ? "Program records" : id) + " · " + (selection == "Academic history" ? "Complete recorded history" : academicYear + " · " + term); if (data.Rows.Count == 0) feedback.Text = "No saved records match this report context."; });
             };
             preview.Click += (s, e) => { if (!(grid.DataSource is DataTable table) || reportName == "") { NeedSelection(); return; } OpenReport(reportName, table, reportContext); };
             await Task.CompletedTask;

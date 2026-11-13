@@ -195,7 +195,7 @@ namespace CapstoneProject.Presentation
             page.Controls.Add(grid, 0, 1);
             var export = Theme.Button("Print / export evaluation");
             page.Controls.Add(export, 0, 2);
-            load.Click += async (s, e) => { string student = id.Text.Trim(); await LoadData(() => service.Evaluation(student), data => { selectedStudent = student; Bind(grid, data, "course_code", "course_description", "units", "year_level", "recorded_grades", "completion"); }); };
+            load.Click += async (s, e) => { string student = id.Text.Trim(); await LoadData(() => service.Evaluation(student), data => { selectedStudent = student; Bind(grid, data, "course_code", "course_description", "units", "year_level", "recorded_grades", "completion"); ReportViewer.SizeReportColumns(grid); }); };
             export.Click += (s, e) => { if (grid.DataSource is DataTable table) OpenReport("Curriculum evaluation", table, "Student " + id.Text + " · Internal evaluation"); else NeedSelection(); };
             if (id.Text != "")
                 load.PerformClick();

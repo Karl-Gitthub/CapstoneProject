@@ -27,6 +27,7 @@ internal static class WorkspaceTests
     }
     public static void Units(Action<string, Action> check)
     {
+        ReportLayoutTests.Run(check);
         ApprovedBatchTests.Units(check);
         DemoSessionTests.Units(check);
         check("schedule overlap detects shared days", () => Equal(true, SchoolService.ScheduleOverlap("M,W", 540, 630, "W,F", 600, 690)));

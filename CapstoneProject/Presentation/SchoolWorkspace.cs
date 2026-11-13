@@ -132,11 +132,24 @@ namespace CapstoneProject.Presentation
                 return user.Role == "FACULTY" ? "Faculty" : AccessPolicy.Coordinator(user) ? AccessPolicy.Program(user) + " coordinator" : user.Role == "ADMINISTRATOR" ? "Administrator" : "Registrar";
             }
         }
-        private static Button NavigationButton(string name)
+        private sealed class NavigationLink : Button
         {
-            var button = Theme.Button(name);
-            button.AutoSize = false;
-            button.Size = new Size(184, 42);
+            public override Size GetPreferredSize(Size proposedSize)
+            {
+                int width = MaximumSize.Width > 0 ? MaximumSize.Width : base.GetPreferredSize(proposedSize).Width;
+                int inset = Math.Max(4, Padding.Vertical);
+                var text = TextRenderer.MeasureText(Text, Font,
+                    new Size(Math.Max(1, width - Padding.Horizontal - inset), int.MaxValue),
+                    TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
+                return new Size(width, Math.Max(MinimumSize.Height, text.Height + Padding.Vertical + inset));
+            }
+        }
+        private static Button NavigationButton(string name, int width = 184)
+        {
+            var button = new NavigationLink { Text = name, AutoSize = true, Padding = new Padding(12, 4, 12, 4), FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false };
+            button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            button.MinimumSize = new Size(width, 42);
+            button.MaximumSize = new Size(width, 0);
             button.TextAlign = ContentAlignment.MiddleLeft;
             button.BackColor = Theme.Navy;
             button.ForeColor = Color.White;
@@ -148,9 +161,8 @@ namespace CapstoneProject.Presentation
         }
         private void AddRoute(string name)
         {
-            var button = NavigationButton(name);
             // Leave room for a scrollbar at the minimum window size.
-            button.Width = 160;
+            var button = NavigationButton(name, 160);
             button.Click += (s, e) => Navigate(name);
             navigation.Controls.Add(button);
             links.Add(name, button);

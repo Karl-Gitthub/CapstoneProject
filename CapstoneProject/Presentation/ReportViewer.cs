@@ -15,6 +15,7 @@ namespace CapstoneProject.Presentation
         private readonly DataTable table;
         private readonly string reportTitle, context;
         private int rowIndex, pageNumber;
+        private float rowOffset;
         public ReportViewer(string title, DataTable table, string context)
         {
             this.table = table.Copy();
@@ -40,6 +41,7 @@ namespace CapstoneProject.Presentation
             shell.Controls.Add(note, 0, 1);
             var grid = Theme.Grid("Report records");
             grid.DataSource = this.table;
+            SizeReportColumns(grid);
             shell.Controls.Add(grid, 0, 2);
             var bar = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Top, Margin = new Padding(0, 16, 0, 0) };
             var csv = Theme.Button("Export CSV");
@@ -51,8 +53,8 @@ namespace CapstoneProject.Presentation
             shell.Controls.Add(bar, 0, 3);
             Controls.Add(shell);
             csv.Click += (s, e) => { using (var dialog = new SaveFileDialog { Filter = "CSV files (*.csv)|*.csv", FileName = title.Replace(' ', '-') + ".csv" }) if (dialog.ShowDialog(this) == DialogResult.OK) { try { File.WriteAllText(dialog.FileName, Csv(this.table), new UTF8Encoding(true)); MessageBox.Show(this, "CSV exported.", "Report export"); } catch (IOException) { MessageBox.Show(this, "The file could not be written. Choose another location or close the existing file.", "Export failed"); } } };
-            preview.Click += (s, e) => { using (var document = Document()) using (var dialog = new PrintPreviewDialog { Document = document, Width = 1150, Height = 850, UseAntiAlias = true }) try { dialog.ShowDialog(this); } catch (InvalidPrinterException) { MessageBox.Show(this, "No printer is configured. You can still export CSV.", "Print preview"); } };
-            print.Click += (s, e) => { using (var document = Document()) using (var dialog = new PrintDialog { Document = document, UseEXDialog = true }) if (dialog.ShowDialog(this) == DialogResult.OK) try { document.Print(); } catch (InvalidPrinterException) { MessageBox.Show(this, "The selected printer is unavailable.", "Print failed"); } };
+            preview.Click += (s, e) => { using (var document = Document()) using (var dialog = new PrintPreviewDialog { Document = document, Width = 1150, Height = 850, UseAntiAlias = true }) try { dialog.ShowDialog(this); } catch (InvalidPrinterException) { MessageBox.Show(this, "No printer is configured. You can still export CSV.", "Print preview"); } catch (InvalidOperationException ex) { MessageBox.Show(this, ex.Message, "Report layout"); } };
+            print.Click += (s, e) => { using (var document = Document()) using (var dialog = new PrintDialog { Document = document, UseEXDialog = true }) if (dialog.ShowDialog(this) == DialogResult.OK) try { document.Print(); } catch (InvalidPrinterException) { MessageBox.Show(this, "The selected printer is unavailable.", "Print failed"); } catch (InvalidOperationException ex) { MessageBox.Show(this, ex.Message, "Report layout"); } };
         }
         public static string CsvCell(string value)
         {
@@ -74,49 +76,98 @@ namespace CapstoneProject.Presentation
         {
             return Math.Max(1, (height - 180) / 30);
         }
+        internal static void SizeReportColumns(DataGridView grid)
+        {
+            // Preserve complete identifiers; narrow windows can scroll horizontally.
+            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        }
         private PrintDocument Document()
         {
             var document = new PrintDocument { DocumentName = reportTitle };
             document.DefaultPageSettings.Landscape = table.Columns.Count > 5;
             document.DefaultPageSettings.Margins = new Margins(45, 45, 45, 45);
-            document.BeginPrint += (s, e) => { rowIndex = 0; pageNumber = 0; };
-            document.PrintPage += (s, e) =>
-            {
-                pageNumber++;
-                var bounds = e.MarginBounds;
-                using (var heading = new Font("Segoe UI", 14, FontStyle.Bold))
-                using (var font = new Font("Segoe UI", 9))
-                using (var bold = new Font("Segoe UI", 9, FontStyle.Bold))
-                using (var brush = new SolidBrush(Theme.Ink))
-                using (var navy = new SolidBrush(Theme.Navy))
-                using (var pale = new SolidBrush(Theme.Pale))
-                using (var pen = new Pen(Theme.Border))
-                {
-                    var g = e.Graphics;
-                    g.DrawString("SYSTEMS PLUS COMPUTER COLLEGE", heading, navy, bounds.Left, bounds.Top);
-                    g.DrawString(reportTitle, bold, brush, bounds.Left, bounds.Top + 30);
-                    g.DrawString(context, font, brush, new RectangleF(bounds.Left, bounds.Top + 51, bounds.Width, 38));
-                    float y = bounds.Top + 100, width = bounds.Width / (float)Math.Max(1, table.Columns.Count);
-                    g.FillRectangle(pale, bounds.Left, y, bounds.Width, 30);
-                    using (var format = new StringFormat { Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap })
-                    {
-                        for (int i = 0; i < table.Columns.Count; i++)
-                            g.DrawString(table.Columns[i].ColumnName, bold, brush, new RectangleF(bounds.Left + i * width + 5, y + 6, width - 10, 25), format);
-                        y += 30;
-                        int end = Math.Min(table.Rows.Count, rowIndex + RowsPerPage(bounds.Height));
-                        for (; rowIndex < end; rowIndex++)
-                        {
-                            for (int i = 0; i < table.Columns.Count; i++)
-                                g.DrawString(Convert.ToString(table.Rows[rowIndex][i]), font, brush, new RectangleF(bounds.Left + i * width + 5, y + 6, width - 10, 25), format);
-                            y += 30;
-                            g.DrawLine(pen, bounds.Left, y, bounds.Right, y);
-                        }
-                    }
-                    g.DrawString("Internal copy · " + DateTime.Today.ToString("dd MMM yyyy") + " · Page " + pageNumber, font, brush, bounds.Left, bounds.Bottom - 22);
-                }
-                e.HasMorePages = rowIndex < table.Rows.Count;
-            };
+            document.BeginPrint += (s, e) => { rowIndex = 0; pageNumber = 0; rowOffset = 0; };
+            document.PrintPage += (s, e) => e.HasMorePages = RenderPage(e.Graphics, e.MarginBounds);
             return document;
+        }
+        private bool RenderPage(Graphics g, Rectangle bounds)
+        {
+            pageNumber++;
+            using (var heading = new Font("Segoe UI", 14, FontStyle.Bold))
+            using (var font = new Font("Segoe UI", 9))
+            using (var bold = new Font("Segoe UI", 9, FontStyle.Bold))
+            using (var brush = new SolidBrush(Theme.Ink))
+            using (var navy = new SolidBrush(Theme.Navy))
+            using (var pale = new SolidBrush(Theme.Pale))
+            using (var pen = new Pen(Theme.Border))
+            {
+                g.DrawString("SYSTEMS PLUS COMPUTER COLLEGE", heading, navy, bounds.Left, bounds.Top);
+                g.DrawString(reportTitle, bold, brush, bounds.Left, bounds.Top + 30);
+                float contextHeight = Math.Max(38, g.MeasureString(context, font, bounds.Width).Height);
+                g.DrawString(context, font, brush, new RectangleF(bounds.Left, bounds.Top + 51, bounds.Width, contextHeight));
+                float y = bounds.Top + 61 + contextHeight;
+                using (var format = new StringFormat { Trimming = StringTrimming.None })
+                {
+                    var widths = ColumnWidths(g, font, bold, bounds.Width);
+                    float headerHeight = 30;
+                    for (int i = 0; i < table.Columns.Count; i++)
+                        headerHeight = Math.Max(headerHeight, g.MeasureString(table.Columns[i].ColumnName, bold, new SizeF(Math.Max(1, widths[i] - 10), float.MaxValue), format).Height + 12);
+                    g.FillRectangle(pale, bounds.Left, y, bounds.Width, headerHeight);
+                    float x = bounds.Left;
+                    for (int i = 0; i < table.Columns.Count; i++)
+                    {
+                        g.DrawString(table.Columns[i].ColumnName, bold, brush, new RectangleF(x + 5, y + 6, Math.Max(1, widths[i] - 10), headerHeight - 12), format);
+                        x += widths[i];
+                    }
+                    y += headerHeight;
+                    float bottom = bounds.Bottom - 34, pageHeight = bottom - y;
+                    if (pageHeight < font.GetHeight(g))
+                        throw new InvalidOperationException("The report does not fit this paper size. Choose a larger paper size or smaller margins.");
+                    while (rowIndex < table.Rows.Count && bottom - y >= 1)
+                    {
+                        float rowHeight = 30;
+                        for (int i = 0; i < table.Columns.Count; i++)
+                            rowHeight = Math.Max(rowHeight, g.MeasureString(Convert.ToString(table.Rows[rowIndex][i], CultureInfo.InvariantCulture), font, new SizeF(Math.Max(1, widths[i] - 10), float.MaxValue), format).Height + 12);
+                        float remaining = rowHeight - rowOffset, space = bottom - y;
+                        // Keep ordinary rows together. Oversized rows continue on the next page.
+                        if (rowOffset == 0 && rowHeight <= pageHeight && remaining > space) break;
+                        float slice = Math.Min(remaining, space);
+                        var state = g.Save();
+                        try
+                        {
+                            g.SetClip(new RectangleF(bounds.Left, y, bounds.Width, slice), System.Drawing.Drawing2D.CombineMode.Intersect);
+                            x = bounds.Left;
+                            for (int i = 0; i < table.Columns.Count; i++)
+                            {
+                                g.DrawString(Convert.ToString(table.Rows[rowIndex][i], CultureInfo.InvariantCulture), font, brush, new RectangleF(x + 5, y + 6 - rowOffset, Math.Max(1, widths[i] - 10), rowHeight - 12), format);
+                                x += widths[i];
+                            }
+                        }
+                        finally { g.Restore(state); }
+                        y += slice;
+                        if (remaining > slice) { rowOffset += slice; break; }
+                        rowIndex++; rowOffset = 0;
+                        g.DrawLine(pen, bounds.Left, y, bounds.Right, y);
+                    }
+                }
+                g.DrawString("Internal copy · " + DateTime.Today.ToString("dd MMM yyyy") + " · Page " + pageNumber, font, brush, bounds.Left, bounds.Bottom - 22);
+            }
+            return rowIndex < table.Rows.Count;
+        }
+        private float[] ColumnWidths(Graphics graphics, Font font, Font bold, float available)
+        {
+            var widths = new float[table.Columns.Count];
+            for (int i = 0; i < widths.Length; i++)
+            {
+                float preferred = graphics.MeasureString(table.Columns[i].ColumnName, bold).Width;
+                foreach (DataRow row in table.Rows)
+                    preferred = Math.Max(preferred, graphics.MeasureString(Convert.ToString(row[i], CultureInfo.InvariantCulture), font).Width);
+                widths[i] = Math.Max(60, Math.Min(280, preferred + 14));
+            }
+            float total = widths.Sum();
+            for (int i = 0; i < widths.Length; i++) widths[i] *= available / total;
+            return widths;
         }
     }
 }

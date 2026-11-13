@@ -107,6 +107,8 @@ All generated databases, accounts, archives, lock files, and builds remain under
 
 ## Verification
 
+The subsequent navigation/report-layout revision passed all 249 checks in one complete isolated run. Actual Release screens showed both long navigation captions and full report identifiers, and native previews were rendered for both programs' grades and evaluations without printing. See [layout verification](LAYOUT-VALIDATION.md). Close the running application and reopen **Start Demo.cmd** to build the revised screens with the existing demo data.
+
 The simpler role separation passed 197 application checks and 43 script checks across separate successful runs on 13 November 2026. All six locally provisioned demo accounts authenticated. See [release readiness](READINESS.md) for the setup-process stall and successful fresh rerun; this was not one uninterrupted suite run.
 
 The earlier administrator-navigation update passed 212 checks. That broad academic menu has been superseded by the simpler role separation documented in [role access](ROLE-ACCESS.md). Close the running demo and reopen **Start Demo.cmd** to build the updated screens; existing credentials and records are retained.

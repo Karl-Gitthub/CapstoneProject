@@ -13,6 +13,7 @@
     <Compile Include="OnboardingTests.cs"/>
     <Compile Include="GradeContextTests.cs"/>
     <Compile Include="RoleAccessTests.cs"/>
+    <Compile Include="ReportLayoutTests.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

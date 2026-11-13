@@ -48,7 +48,7 @@ The suite also generates WinForms renders under `docs/screenshots` at simulated 
 
 ## Current scope
 
-See [role access and workflow](docs/ROLE-ACCESS.md) for each staff role's responsibilities, and [release readiness](docs/READINESS.md) for the 240-check verification and remaining work before real school deployment.
+See [role access and workflow](docs/ROLE-ACCESS.md) for each staff role's responsibilities, and [release readiness](docs/READINESS.md) for the 249-check verification and remaining work before real school deployment. The [layout verification](docs/LAYOUT-VALIDATION.md) records navigation-caption and report-identifier fixes.
 
 For adviser and staff review, follow the [user acceptance test guide](docs/UAT.md) and complete its results checklist. `scripts/Test-Acceptance.ps1` runs a separate automated rehearsal of both programs using fresh disposable data; human acceptance remains a separate decision.
 

@@ -17,18 +17,18 @@ No default account or password is supplied. Administrator creation retains the o
 
 ## Verification
 
-On 13 November 2026, an isolated source snapshot was verified with these passing checks:
+On 13 November 2026, the full `scripts/Test.ps1` run completed successfully against an isolated source snapshot:
 
-- 197 application checks, including first-run form completion/cancellation, grade-grid interactions, all 19 approved role navigation entries, prohibited routes, direct service denials, profile access and minimum-size navigation. Administrator has no academic access; only faculty save grades; only coordinators maintain teaching assignments.
+- 206 application checks, including nine navigation/report-layout checks, first-run form completion/cancellation, grade-grid interactions, all 19 approved role navigation entries, prohibited routes, direct service denials, profile access and minimum-size navigation. Administrator has no academic access; only faculty save grades; only coordinators maintain teaching assignments.
 - Eight prerequisite/path checks, including missing provider discovery, read-only/locked files and long paths.
 - Nine database setup checks.
 - 12 demo/reset safety checks.
 - Ten fictional-profile checks covering complete form data, account/grade preservation and rollback on a failed refresh.
 - Four visible-window checks using Release builds, including ordinary and direct demo entry.
 
-Total: **240 passed across the application suite and script checks**. Six explicitly provisioned local demo accounts also authenticated successfully; their generated credentials remain outside Git. See [role access](ROLE-ACCESS.md) for the workflow. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
+Total: **249 passed in the complete run**. A separate Release build, actual administrator/registrar screen checks and four native grade/evaluation preview proofs also succeeded; see [layout verification](LAYOUT-VALIDATION.md). Six explicitly provisioned local demo accounts previously authenticated successfully; their generated credentials remain outside Git. Only the two existing unused-field compiler warnings in the legacy faculty form remain.
 
-The first script run stalled in a native ACE/OLE migration process after schema writes; only that verified test child was stopped. All nine setup checks subsequently passed in a fresh independent run without intervention. The sample-profile fixture was updated to use separate registrar, coordinator and faculty accounts, and all ten profile checks passed on rerun. All four visible-window checks then passed. These were separate successful verification runs, not one uninterrupted full-suite pass; the native migration stall remains an observation for release rehearsal.
+Earlier role-separation verification passed 240 checks across separate runs after one native ACE/OLE migration process stalled and its setup checks were rerun. The current 249-check run completed without that intervention. The earlier native stall remains an observation for release rehearsal; this layout revision did not change migration code.
 
 These checks use disposable data. They do not certify every Windows configuration, printer, real OS DPI setting, screen reader, large dataset, disk failure or power-loss scenario. Human acceptance rehearsal and a clean second-computer check remain necessary before an external handoff.
 
@@ -37,7 +37,7 @@ The separate [acceptance rehearsal](UAT.md) subsequently passed 27 service-workf
 ## Remaining work before real school use
 
 1. Add validated foreign keys, required fields, uniqueness and lookup indexes to the workflow tables through a backed-up/reconciled migration. Current database enforcement still permits orphan enrollment lines through direct writes.
-2. Correct report filters, long-text print layouts and access-denied export handling. Official transcript/GWA templates require approved school rules.
+2. Validate report filters, physical print output, official document layouts and access-denied export handling. Wrapped print content and measured identifier widths are now covered, but official transcript/GWA templates still require approved school rules.
 3. Resolve previously exposed credentials and separately decide on coordinated Git-history cleanup. Current tracked source excludes the old data files; old revisions still contain them.
 4. Add durable authentication controls, idle locking, deliberate privileged approvals and a secure administrator recovery process.
 5. Verify migration/restore failure handling, off-device backup retention and richer audit history. Local database owners can change files outside application checks.
