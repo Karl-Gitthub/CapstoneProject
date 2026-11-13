@@ -32,6 +32,8 @@ The first script run stalled in a native ACE/OLE migration process after schema 
 
 These checks use disposable data. They do not certify every Windows configuration, printer, real OS DPI setting, screen reader, large dataset, disk failure or power-loss scenario. Human acceptance rehearsal and a clean second-computer check remain necessary before an external handoff.
 
+The separate [acceptance rehearsal](UAT.md) subsequently passed 27 service-workflow checks for BSIT and BSBA, with saved-grade CSV read-back verification and a nonempty-fixture rejection check. Application behavior was unchanged. The 26-case manual UAT register and acceptance-owner sign-off are prepared but remain pending; automated rehearsal does not establish user acceptance.
+
 ## Remaining work before real school use
 
 1. Add validated foreign keys, required fields, uniqueness and lookup indexes to the workflow tables through a backed-up/reconciled migration. Current database enforcement still permits orphan enrollment lines through direct writes.
